@@ -1,10 +1,3 @@
-//
-//  MindfulPhoneApp.swift
-//  MindfulPhone
-//
-//  Created by Lukasz Gandecki on 12/02/2026.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -12,9 +5,18 @@ import SwiftData
 struct MindfulPhoneApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Conversation.self,
+            ChatMessage.self,
+            UnlockRecord.self,
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        // groupContainer: .none prevents SwiftData from using the App Group
+        // container (which causes sandbox permission errors). The app group
+        // is for IPC with extensions only, not for SwiftData storage.
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            groupContainer: .none
+        )
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
@@ -26,6 +28,9 @@ struct MindfulPhoneApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear {
+                    AccountabilityService.shared.startObserving()
+                }
         }
         .modelContainer(sharedModelContainer)
     }

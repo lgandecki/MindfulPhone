@@ -6,6 +6,34 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FF9680862F3E0924009F3CFD /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9680852F3E0924009F3CFD /* ManagedSettings.framework */; };
+		FF9680882F3E0924009F3CFD /* ManagedSettingsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9680872F3E0924009F3CFD /* ManagedSettingsUI.framework */; };
+		FF9680902F3E0924009F3CFD /* ShieldConfigurationExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FF9680832F3E0924009F3CFD /* ShieldConfigurationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FF96809B2F3E093F009F3CFD /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9680852F3E0924009F3CFD /* ManagedSettings.framework */; };
+		FF9680A32F3E093F009F3CFD /* ShieldActionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FF96809A2F3E093F009F3CFD /* ShieldActionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FF9680AE2F3E094F009F3CFD /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9680AD2F3E094F009F3CFD /* DeviceActivity.framework */; };
+		FF9680B62F3E094F009F3CFD /* DeviceActivityMonitorExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FF9680AC2F3E094F009F3CFD /* DeviceActivityMonitorExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FF9680D12F3E0C00009F3CFD /* AppGroupConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C72F3E0B84009F3CFD /* AppGroupConstants.swift */; };
+		FF9680D22F3E0C00009F3CFD /* PendingUnlockRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C82F3E0B84009F3CFD /* PendingUnlockRequest.swift */; };
+		FF9680D32F3E0C00009F3CFD /* ActiveUnlockRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C92F3E0B84009F3CFD /* ActiveUnlockRecord.swift */; };
+		FF9680D42F3E0C00009F3CFD /* AppGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680CA2F3E0B91009F3CFD /* AppGroupManager.swift */; };
+		FF9680D52F3E0C01009F3CFD /* AppGroupConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C72F3E0B84009F3CFD /* AppGroupConstants.swift */; };
+		FF9680D62F3E0C01009F3CFD /* PendingUnlockRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C82F3E0B84009F3CFD /* PendingUnlockRequest.swift */; };
+		FF9680D72F3E0C01009F3CFD /* ActiveUnlockRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C92F3E0B84009F3CFD /* ActiveUnlockRecord.swift */; };
+		FF9680D82F3E0C01009F3CFD /* AppGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680CA2F3E0B91009F3CFD /* AppGroupManager.swift */; };
+		FF9680D92F3E0C02009F3CFD /* AppGroupConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C72F3E0B84009F3CFD /* AppGroupConstants.swift */; };
+		FF9680DA2F3E0C02009F3CFD /* PendingUnlockRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C82F3E0B84009F3CFD /* PendingUnlockRequest.swift */; };
+		FF9680DB2F3E0C02009F3CFD /* ActiveUnlockRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C92F3E0B84009F3CFD /* ActiveUnlockRecord.swift */; };
+		FF9680DC2F3E0C02009F3CFD /* AppGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680CA2F3E0B91009F3CFD /* AppGroupManager.swift */; };
+		FF9680DD2F3E0C03009F3CFD /* AppGroupConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C72F3E0B84009F3CFD /* AppGroupConstants.swift */; };
+		FF9680DE2F3E0C03009F3CFD /* PendingUnlockRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C82F3E0B84009F3CFD /* PendingUnlockRequest.swift */; };
+		FF9680DF2F3E0C03009F3CFD /* ActiveUnlockRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C92F3E0B84009F3CFD /* ActiveUnlockRecord.swift */; };
+		FF9680E02F3E0C03009F3CFD /* AppGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680CA2F3E0B91009F3CFD /* AppGroupManager.swift */; };
+		FF9680E22F3E0C04009F3CFD /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9680852F3E0924009F3CFD /* ManagedSettings.framework */; };
+		FF9680E12F3E0C04009F3CFD /* FamilyControls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9680E42F3E0C04009F3CFD /* FamilyControls.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		FF9680632F3E08F6009F3CFD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,17 +49,99 @@
 			remoteGlobalIDString = FF9680522F3E08F5009F3CFD;
 			remoteInfo = MindfulPhone;
 		};
+		FF96808E2F3E0924009F3CFD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FF96804B2F3E08F5009F3CFD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FF9680822F3E0924009F3CFD;
+			remoteInfo = ShieldConfigurationExtension;
+		};
+		FF9680A12F3E093F009F3CFD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FF96804B2F3E08F5009F3CFD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FF9680992F3E093F009F3CFD;
+			remoteInfo = ShieldActionExtension;
+		};
+		FF9680B42F3E094F009F3CFD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FF96804B2F3E08F5009F3CFD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FF9680AB2F3E094F009F3CFD;
+			remoteInfo = DeviceActivityMonitorExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FF9680952F3E0924009F3CFD /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				FF9680B62F3E094F009F3CFD /* DeviceActivityMonitorExtension.appex in Embed Foundation Extensions */,
+				FF9680902F3E0924009F3CFD /* ShieldConfigurationExtension.appex in Embed Foundation Extensions */,
+				FF9680A32F3E093F009F3CFD /* ShieldActionExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		FF9680532F3E08F5009F3CFD /* MindfulPhone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MindfulPhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF9680622F3E08F6009F3CFD /* MindfulPhoneTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MindfulPhoneTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF96806C2F3E08F6009F3CFD /* MindfulPhoneUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MindfulPhoneUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF9680832F3E0924009F3CFD /* ShieldConfigurationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShieldConfigurationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF9680852F3E0924009F3CFD /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
+		FF9680872F3E0924009F3CFD /* ManagedSettingsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettingsUI.framework; path = System/Library/Frameworks/ManagedSettingsUI.framework; sourceTree = SDKROOT; };
+		FF96809A2F3E093F009F3CFD /* ShieldActionExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShieldActionExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF9680AC2F3E094F009F3CFD /* DeviceActivityMonitorExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DeviceActivityMonitorExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF9680AD2F3E094F009F3CFD /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
+		FF9680C72F3E0B84009F3CFD /* AppGroupConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupConstants.swift; sourceTree = "<group>"; };
+		FF9680C82F3E0B84009F3CFD /* PendingUnlockRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingUnlockRequest.swift; sourceTree = "<group>"; };
+		FF9680C92F3E0B84009F3CFD /* ActiveUnlockRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveUnlockRecord.swift; sourceTree = "<group>"; };
+		FF9680CA2F3E0B91009F3CFD /* AppGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupManager.swift; sourceTree = "<group>"; };
+		FF9680E42F3E0C04009F3CFD /* FamilyControls.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FamilyControls.framework; path = System/Library/Frameworks/FamilyControls.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FF9680912F3E0924009F3CFD /* Exceptions for "ShieldConfigurationExtension" folder in "ShieldConfigurationExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FF9680822F3E0924009F3CFD /* ShieldConfigurationExtension */;
+		};
+		FF9680A42F3E093F009F3CFD /* Exceptions for "ShieldActionExtension" folder in "ShieldActionExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FF9680992F3E093F009F3CFD /* ShieldActionExtension */;
+		};
+		FF9680B72F3E094F009F3CFD /* Exceptions for "DeviceActivityMonitorExtension" folder in "DeviceActivityMonitorExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FF9680AB2F3E094F009F3CFD /* DeviceActivityMonitorExtension */;
+		};
+		FF9680BC2F3E0A12009F3CFD /* Exceptions for "MindfulPhone" folder in "MindfulPhone" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FF9680522F3E08F5009F3CFD /* MindfulPhone */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FF9680552F3E08F5009F3CFD /* MindfulPhone */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FF9680BC2F3E0A12009F3CFD /* Exceptions for "MindfulPhone" folder in "MindfulPhone" target */,
+			);
 			path = MindfulPhone;
 			sourceTree = "<group>";
 		};
@@ -43,6 +153,30 @@
 		FF96806F2F3E08F6009F3CFD /* MindfulPhoneUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = MindfulPhoneUITests;
+			sourceTree = "<group>";
+		};
+		FF9680892F3E0924009F3CFD /* ShieldConfigurationExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FF9680912F3E0924009F3CFD /* Exceptions for "ShieldConfigurationExtension" folder in "ShieldConfigurationExtension" target */,
+			);
+			path = ShieldConfigurationExtension;
+			sourceTree = "<group>";
+		};
+		FF96809C2F3E093F009F3CFD /* ShieldActionExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FF9680A42F3E093F009F3CFD /* Exceptions for "ShieldActionExtension" folder in "ShieldActionExtension" target */,
+			);
+			path = ShieldActionExtension;
+			sourceTree = "<group>";
+		};
+		FF9680AF2F3E094F009F3CFD /* DeviceActivityMonitorExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FF9680B72F3E094F009F3CFD /* Exceptions for "DeviceActivityMonitorExtension" folder in "DeviceActivityMonitorExtension" target */,
+			);
+			path = DeviceActivityMonitorExtension;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +203,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FF9680802F3E0924009F3CFD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9680862F3E0924009F3CFD /* ManagedSettings.framework in Frameworks */,
+				FF9680882F3E0924009F3CFD /* ManagedSettingsUI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9680972F3E093F009F3CFD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF96809B2F3E093F009F3CFD /* ManagedSettings.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9680A92F3E094F009F3CFD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9680AE2F3E094F009F3CFD /* DeviceActivity.framework in Frameworks */,
+				FF9680E22F3E0C04009F3CFD /* ManagedSettings.framework in Frameworks */,
+				FF9680E12F3E0C04009F3CFD /* FamilyControls.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -78,7 +239,12 @@
 				FF9680552F3E08F5009F3CFD /* MindfulPhone */,
 				FF9680652F3E08F6009F3CFD /* MindfulPhoneTests */,
 				FF96806F2F3E08F6009F3CFD /* MindfulPhoneUITests */,
+				FF9680892F3E0924009F3CFD /* ShieldConfigurationExtension */,
+				FF96809C2F3E093F009F3CFD /* ShieldActionExtension */,
+				FF9680AF2F3E094F009F3CFD /* DeviceActivityMonitorExtension */,
+				FF9680842F3E0924009F3CFD /* Frameworks */,
 				FF9680542F3E08F5009F3CFD /* Products */,
+				FF9680BE2F3E0B69009F3CFD /* Shared */,
 			);
 			sourceTree = "<group>";
 		};
@@ -88,8 +254,33 @@
 				FF9680532F3E08F5009F3CFD /* MindfulPhone.app */,
 				FF9680622F3E08F6009F3CFD /* MindfulPhoneTests.xctest */,
 				FF96806C2F3E08F6009F3CFD /* MindfulPhoneUITests.xctest */,
+				FF9680832F3E0924009F3CFD /* ShieldConfigurationExtension.appex */,
+				FF96809A2F3E093F009F3CFD /* ShieldActionExtension.appex */,
+				FF9680AC2F3E094F009F3CFD /* DeviceActivityMonitorExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		FF9680842F3E0924009F3CFD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FF9680852F3E0924009F3CFD /* ManagedSettings.framework */,
+				FF9680872F3E0924009F3CFD /* ManagedSettingsUI.framework */,
+				FF9680AD2F3E094F009F3CFD /* DeviceActivity.framework */,
+				FF9680E42F3E0C04009F3CFD /* FamilyControls.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FF9680BE2F3E0B69009F3CFD /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				FF9680C72F3E0B84009F3CFD /* AppGroupConstants.swift */,
+				FF9680C82F3E0B84009F3CFD /* PendingUnlockRequest.swift */,
+				FF9680C92F3E0B84009F3CFD /* ActiveUnlockRecord.swift */,
+				FF9680CA2F3E0B91009F3CFD /* AppGroupManager.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -102,10 +293,14 @@
 				FF96804F2F3E08F5009F3CFD /* Sources */,
 				FF9680502F3E08F5009F3CFD /* Frameworks */,
 				FF9680512F3E08F5009F3CFD /* Resources */,
+				FF9680952F3E0924009F3CFD /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				FF96808F2F3E0924009F3CFD /* PBXTargetDependency */,
+				FF9680A22F3E093F009F3CFD /* PBXTargetDependency */,
+				FF9680B52F3E094F009F3CFD /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				FF9680552F3E08F5009F3CFD /* MindfulPhone */,
@@ -163,6 +358,72 @@
 			productReference = FF96806C2F3E08F6009F3CFD /* MindfulPhoneUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		FF9680822F3E0924009F3CFD /* ShieldConfigurationExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF9680922F3E0924009F3CFD /* Build configuration list for PBXNativeTarget "ShieldConfigurationExtension" */;
+			buildPhases = (
+				FF96807F2F3E0924009F3CFD /* Sources */,
+				FF9680802F3E0924009F3CFD /* Frameworks */,
+				FF9680812F3E0924009F3CFD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FF9680892F3E0924009F3CFD /* ShieldConfigurationExtension */,
+			);
+			name = ShieldConfigurationExtension;
+			packageProductDependencies = (
+			);
+			productName = ShieldConfigurationExtension;
+			productReference = FF9680832F3E0924009F3CFD /* ShieldConfigurationExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		FF9680992F3E093F009F3CFD /* ShieldActionExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF9680A52F3E093F009F3CFD /* Build configuration list for PBXNativeTarget "ShieldActionExtension" */;
+			buildPhases = (
+				FF9680962F3E093F009F3CFD /* Sources */,
+				FF9680972F3E093F009F3CFD /* Frameworks */,
+				FF9680982F3E093F009F3CFD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FF96809C2F3E093F009F3CFD /* ShieldActionExtension */,
+			);
+			name = ShieldActionExtension;
+			packageProductDependencies = (
+			);
+			productName = ShieldActionExtension;
+			productReference = FF96809A2F3E093F009F3CFD /* ShieldActionExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		FF9680AB2F3E094F009F3CFD /* DeviceActivityMonitorExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF9680B82F3E094F009F3CFD /* Build configuration list for PBXNativeTarget "DeviceActivityMonitorExtension" */;
+			buildPhases = (
+				FF9680A82F3E094F009F3CFD /* Sources */,
+				FF9680A92F3E094F009F3CFD /* Frameworks */,
+				FF9680AA2F3E094F009F3CFD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FF9680AF2F3E094F009F3CFD /* DeviceActivityMonitorExtension */,
+			);
+			name = DeviceActivityMonitorExtension;
+			packageProductDependencies = (
+			);
+			productName = DeviceActivityMonitorExtension;
+			productReference = FF9680AC2F3E094F009F3CFD /* DeviceActivityMonitorExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +445,15 @@
 						CreatedOnToolsVersion = 26.3;
 						TestTargetID = FF9680522F3E08F5009F3CFD;
 					};
+					FF9680822F3E0924009F3CFD = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					FF9680992F3E093F009F3CFD = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					FF9680AB2F3E094F009F3CFD = {
+						CreatedOnToolsVersion = 26.3;
+					};
 				};
 			};
 			buildConfigurationList = FF96804E2F3E08F5009F3CFD /* Build configuration list for PBXProject "MindfulPhone" */;
@@ -203,6 +473,9 @@
 				FF9680522F3E08F5009F3CFD /* MindfulPhone */,
 				FF9680612F3E08F6009F3CFD /* MindfulPhoneTests */,
 				FF96806B2F3E08F6009F3CFD /* MindfulPhoneUITests */,
+				FF9680822F3E0924009F3CFD /* ShieldConfigurationExtension */,
+				FF9680992F3E093F009F3CFD /* ShieldActionExtension */,
+				FF9680AB2F3E094F009F3CFD /* DeviceActivityMonitorExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -229,6 +502,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FF9680812F3E0924009F3CFD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9680982F3E093F009F3CFD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9680AA2F3E094F009F3CFD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -236,6 +530,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF9680D12F3E0C00009F3CFD /* AppGroupConstants.swift in Sources */,
+				FF9680D22F3E0C00009F3CFD /* PendingUnlockRequest.swift in Sources */,
+				FF9680D32F3E0C00009F3CFD /* ActiveUnlockRecord.swift in Sources */,
+				FF9680D42F3E0C00009F3CFD /* AppGroupManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,6 +551,39 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FF96807F2F3E0924009F3CFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9680D52F3E0C01009F3CFD /* AppGroupConstants.swift in Sources */,
+				FF9680D62F3E0C01009F3CFD /* PendingUnlockRequest.swift in Sources */,
+				FF9680D72F3E0C01009F3CFD /* ActiveUnlockRecord.swift in Sources */,
+				FF9680D82F3E0C01009F3CFD /* AppGroupManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9680962F3E093F009F3CFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9680D92F3E0C02009F3CFD /* AppGroupConstants.swift in Sources */,
+				FF9680DA2F3E0C02009F3CFD /* PendingUnlockRequest.swift in Sources */,
+				FF9680DB2F3E0C02009F3CFD /* ActiveUnlockRecord.swift in Sources */,
+				FF9680DC2F3E0C02009F3CFD /* AppGroupManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FF9680A82F3E094F009F3CFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF9680DD2F3E0C03009F3CFD /* AppGroupConstants.swift in Sources */,
+				FF9680DE2F3E0C03009F3CFD /* PendingUnlockRequest.swift in Sources */,
+				FF9680DF2F3E0C03009F3CFD /* ActiveUnlockRecord.swift in Sources */,
+				FF9680E02F3E0C03009F3CFD /* AppGroupManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +596,21 @@
 			isa = PBXTargetDependency;
 			target = FF9680522F3E08F5009F3CFD /* MindfulPhone */;
 			targetProxy = FF96806D2F3E08F6009F3CFD /* PBXContainerItemProxy */;
+		};
+		FF96808F2F3E0924009F3CFD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FF9680822F3E0924009F3CFD /* ShieldConfigurationExtension */;
+			targetProxy = FF96808E2F3E0924009F3CFD /* PBXContainerItemProxy */;
+		};
+		FF9680A22F3E093F009F3CFD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FF9680992F3E093F009F3CFD /* ShieldActionExtension */;
+			targetProxy = FF9680A12F3E093F009F3CFD /* PBXContainerItemProxy */;
+		};
+		FF9680B52F3E094F009F3CFD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FF9680AB2F3E094F009F3CFD /* DeviceActivityMonitorExtension */;
+			targetProxy = FF9680B42F3E094F009F3CFD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -395,11 +741,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MindfulPhone/MindfulPhone.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6CT6LJPY6T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MindfulPhone/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -427,11 +775,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MindfulPhone/MindfulPhone.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6CT6LJPY6T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MindfulPhone/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -538,6 +888,180 @@
 			};
 			name = Release;
 		};
+		FF9680932F3E0924009F3CFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShieldConfigurationExtension/ShieldConfigurationExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6CT6LJPY6T;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShieldConfigurationExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ShieldConfigurationExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.lgandecki.MindfulPhone.ShieldConfigurationExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FF9680942F3E0924009F3CFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShieldConfigurationExtension/ShieldConfigurationExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6CT6LJPY6T;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShieldConfigurationExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ShieldConfigurationExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.lgandecki.MindfulPhone.ShieldConfigurationExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		FF9680A62F3E093F009F3CFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShieldActionExtension/ShieldActionExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6CT6LJPY6T;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShieldActionExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ShieldActionExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.lgandecki.MindfulPhone.ShieldActionExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FF9680A72F3E093F009F3CFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShieldActionExtension/ShieldActionExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6CT6LJPY6T;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShieldActionExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ShieldActionExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.lgandecki.MindfulPhone.ShieldActionExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		FF9680B92F3E094F009F3CFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = DeviceActivityMonitorExtension/DeviceActivityMonitorExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6CT6LJPY6T;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DeviceActivityMonitorExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DeviceActivityMonitorExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.lgandecki.MindfulPhone.DeviceActivityMonitorExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FF9680BA2F3E094F009F3CFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = DeviceActivityMonitorExtension/DeviceActivityMonitorExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6CT6LJPY6T;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DeviceActivityMonitorExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DeviceActivityMonitorExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = pro.lgandecki.MindfulPhone.DeviceActivityMonitorExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -573,6 +1097,33 @@
 			buildConfigurations = (
 				FF96807D2F3E08F6009F3CFD /* Debug */,
 				FF96807E2F3E08F6009F3CFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF9680922F3E0924009F3CFD /* Build configuration list for PBXNativeTarget "ShieldConfigurationExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF9680932F3E0924009F3CFD /* Debug */,
+				FF9680942F3E0924009F3CFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF9680A52F3E093F009F3CFD /* Build configuration list for PBXNativeTarget "ShieldActionExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF9680A62F3E093F009F3CFD /* Debug */,
+				FF9680A72F3E093F009F3CFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF9680B82F3E094F009F3CFD /* Build configuration list for PBXNativeTarget "DeviceActivityMonitorExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF9680B92F3E094F009F3CFD /* Debug */,
+				FF9680BA2F3E094F009F3CFD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
