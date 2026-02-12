@@ -1,21 +1,38 @@
 import Foundation
 import ManagedSettings
+import OSLog
+
+struct PendingRequestSaveResult {
+    let success: Bool
+    let wroteFile: Bool
+    let wroteSharedDefaults: Bool
+    let sharedContainerAvailable: Bool
+    let sharedDefaultsAvailable: Bool
+}
 
 final class AppGroupManager {
     static let shared = AppGroupManager()
+    private let runtimeLogger = Logger(
+        subsystem: "pro.lgandecki.MindfulPhone",
+        category: "AppGroupIPC"
+    )
 
     /// Writable data directory inside the shared container (Library/MindfulPhoneData/).
     /// The container ROOT is not writable on iOS — only Library/ and below are.
     private let dataDirectory: URL?
 
-    /// UserDefaults for simple key-value storage (main app only reads/writes these).
-    private let defaults: UserDefaults
+    /// UserDefaults scoped to the app group (for cross-process IPC).
+    private let sharedDefaults: UserDefaults?
+
+    /// Process-local defaults used only for main-app state when shared defaults are unavailable.
+    private let localDefaults = UserDefaults.standard
+    private var canWriteExtensionLogFile = true
 
     private init() {
         let container = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: AppGroupConstants.suiteName
         )
-        self.defaults = UserDefaults(suiteName: AppGroupConstants.suiteName) ?? .standard
+        self.sharedDefaults = UserDefaults(suiteName: AppGroupConstants.suiteName)
 
         // Use Library/MindfulPhoneData/ — the container root is NOT writable,
         // but Library/ and its subdirectories ARE.
@@ -32,15 +49,33 @@ final class AppGroupManager {
         }
     }
 
+    var isSharedContainerAvailable: Bool {
+        dataDirectory != nil
+    }
+
+    var isSharedDefaultsAvailable: Bool {
+        sharedDefaults != nil
+    }
+
+    private var appStateDefaults: UserDefaults {
+        sharedDefaults ?? localDefaults
+    }
+
     // MARK: - File-Based IPC Helpers
 
     private func fileURL(for filename: String) -> URL? {
         dataDirectory?.appendingPathComponent(filename)
     }
 
-    private func writeData(_ data: Data, to filename: String) {
-        guard let url = fileURL(for: filename) else { return }
-        try? data.write(to: url, options: .atomic)
+    @discardableResult
+    private func writeData(_ data: Data, to filename: String) -> Bool {
+        guard let url = fileURL(for: filename) else { return false }
+        do {
+            try data.write(to: url, options: .atomic)
+            return true
+        } catch {
+            return false
+        }
     }
 
     private func readData(from filename: String) -> Data? {
@@ -53,6 +88,22 @@ final class AppGroupManager {
         try? FileManager.default.removeItem(at: url)
     }
 
+    @discardableResult
+    private func setSharedData(_ data: Data, forKey key: String) -> Bool {
+        guard let sharedDefaults else { return false }
+        sharedDefaults.set(data, forKey: key)
+        return sharedDefaults.synchronize()
+    }
+
+    private func getSharedData(forKey key: String) -> Data? {
+        sharedDefaults?.data(forKey: key)
+    }
+
+    private func removeSharedData(forKey key: String) {
+        sharedDefaults?.removeObject(forKey: key)
+        sharedDefaults?.synchronize()
+    }
+
     // MARK: - Token → Name Mapping (Belt-and-Suspenders: File + UserDefaults)
 
     private let tokenMapFilename = "tokenNameMap.json"
@@ -62,9 +113,17 @@ final class AppGroupManager {
         var map = getTokenNameMap()
         map[stableKey(for: token)] = name
         if let data = try? JSONEncoder().encode(map) {
-            writeData(data, to: tokenMapFilename)
-            defaults.set(data, forKey: tokenMapUDKey)
-            defaults.synchronize()
+            _ = writeData(data, to: tokenMapFilename)
+            _ = setSharedData(data, forKey: tokenMapUDKey)
+        }
+    }
+
+    /// Extension-safe variant that avoids app-group file writes.
+    func saveTokenNameSharedDefaultsOnly(_ name: String, for token: ApplicationToken) {
+        var map = getTokenNameMap()
+        map[stableKey(for: token)] = name
+        if let data = try? JSONEncoder().encode(map) {
+            _ = setSharedData(data, forKey: tokenMapUDKey)
         }
     }
 
@@ -79,7 +138,7 @@ final class AppGroupManager {
            let map = try? JSONDecoder().decode([String: String].self, from: data) {
             return map
         }
-        if let data = defaults.data(forKey: tokenMapUDKey),
+        if let data = getSharedData(forKey: tokenMapUDKey),
            let map = try? JSONDecoder().decode([String: String].self, from: data) {
             return map
         }
@@ -104,33 +163,84 @@ final class AppGroupManager {
     private let pendingRequestFilename = "pendingUnlockRequest.json"
     private let pendingRequestUDKey = "pendingUnlockRequestData"
 
-    func savePendingUnlockRequest(_ request: PendingUnlockRequest) {
-        if let data = try? JSONEncoder().encode(request) {
-            // Write to BOTH file and UserDefaults — if one mechanism fails
-            // in the extension sandbox, the other might succeed.
-            writeData(data, to: pendingRequestFilename)
-            defaults.set(data, forKey: pendingRequestUDKey)
-            defaults.synchronize()
+    @discardableResult
+    func savePendingUnlockRequest(_ request: PendingUnlockRequest) -> PendingRequestSaveResult {
+        guard let data = try? JSONEncoder().encode(request) else {
+            return PendingRequestSaveResult(
+                success: false,
+                wroteFile: false,
+                wroteSharedDefaults: false,
+                sharedContainerAvailable: isSharedContainerAvailable,
+                sharedDefaultsAvailable: isSharedDefaultsAvailable
+            )
         }
+
+        // Write to BOTH file and UserDefaults — if one mechanism fails
+        // in the extension sandbox, the other might succeed.
+        let fileWrite = writeData(data, to: pendingRequestFilename)
+        let defaultsWrite = setSharedData(data, forKey: pendingRequestUDKey)
+        return PendingRequestSaveResult(
+            success: fileWrite || defaultsWrite,
+            wroteFile: fileWrite,
+            wroteSharedDefaults: defaultsWrite,
+            sharedContainerAvailable: isSharedContainerAvailable,
+            sharedDefaultsAvailable: isSharedDefaultsAvailable
+        )
     }
 
-    func getPendingUnlockRequest() -> PendingUnlockRequest? {
+    /// Extension-safe variant that avoids app-group file writes.
+    @discardableResult
+    func savePendingUnlockRequestSharedDefaultsOnly(_ request: PendingUnlockRequest) -> PendingRequestSaveResult {
+        guard let data = try? JSONEncoder().encode(request) else {
+            return PendingRequestSaveResult(
+                success: false,
+                wroteFile: false,
+                wroteSharedDefaults: false,
+                sharedContainerAvailable: isSharedContainerAvailable,
+                sharedDefaultsAvailable: isSharedDefaultsAvailable
+            )
+        }
+
+        let defaultsWrite = setSharedData(data, forKey: pendingRequestUDKey)
+        return PendingRequestSaveResult(
+            success: defaultsWrite,
+            wroteFile: false,
+            wroteSharedDefaults: defaultsWrite,
+            sharedContainerAvailable: isSharedContainerAvailable,
+            sharedDefaultsAvailable: isSharedDefaultsAvailable
+        )
+    }
+
+    func getPendingUnlockRequest(maxAge: TimeInterval? = nil) -> PendingUnlockRequest? {
         // Try file first, fall back to UserDefaults
         if let data = readData(from: pendingRequestFilename),
-           let request = try? JSONDecoder().decode(PendingUnlockRequest.self, from: data) {
+           let request = decodePendingRequest(from: data, maxAge: maxAge) {
             return request
         }
-        if let data = defaults.data(forKey: pendingRequestUDKey),
-           let request = try? JSONDecoder().decode(PendingUnlockRequest.self, from: data) {
+        if let data = getSharedData(forKey: pendingRequestUDKey),
+           let request = decodePendingRequest(from: data, maxAge: maxAge) {
             return request
         }
         return nil
     }
 
+    private func decodePendingRequest(from data: Data, maxAge: TimeInterval?) -> PendingUnlockRequest? {
+        guard let request = try? JSONDecoder().decode(PendingUnlockRequest.self, from: data) else {
+            return nil
+        }
+
+        if let maxAge {
+            let age = Date().timeIntervalSince(request.timestamp)
+            if age > maxAge {
+                return nil
+            }
+        }
+        return request
+    }
+
     func clearPendingUnlockRequest() {
         removeFile(pendingRequestFilename)
-        defaults.removeObject(forKey: pendingRequestUDKey)
-        defaults.synchronize()
+        removeSharedData(forKey: pendingRequestUDKey)
     }
 
     // MARK: - Active Unlocks (File-Based)
@@ -167,7 +277,7 @@ final class AppGroupManager {
 
     private func saveAllActiveUnlocks(_ unlocks: [ActiveUnlockRecord]) {
         if let data = try? JSONEncoder().encode(unlocks) {
-            writeData(data, to: activeUnlocksFilename)
+            _ = writeData(data, to: activeUnlocksFilename)
         }
     }
 
@@ -176,7 +286,7 @@ final class AppGroupManager {
     private let exemptSelectionFilename = "exemptSelection.dat"
 
     func saveExemptSelection(_ data: Data) {
-        writeData(data, to: exemptSelectionFilename)
+        _ = writeData(data, to: exemptSelectionFilename)
     }
 
     func getExemptSelectionData() -> Data? {
@@ -187,6 +297,9 @@ final class AppGroupManager {
 
     func diagnosticInfo() -> [String: String] {
         var info: [String: String] = [:]
+
+        info["sharedContainerAvailable"] = isSharedContainerAvailable ? "YES" : "NO"
+        info["sharedDefaultsAvailable"] = isSharedDefaultsAvailable ? "YES" : "NO"
 
         // Data directory
         if let dir = dataDirectory {
@@ -206,28 +319,157 @@ final class AppGroupManager {
 
         // Pending request check
         let fileRequest = readData(from: pendingRequestFilename) != nil
-        let udRequest = defaults.data(forKey: pendingRequestUDKey) != nil
+        let udRequest = getSharedData(forKey: pendingRequestUDKey) != nil
         info["pendingInFile"] = fileRequest ? "YES" : "NO"
         info["pendingInUD"] = udRequest ? "YES" : "NO"
 
+        if let pending = getPendingUnlockRequest() {
+            let age = Int(Date().timeIntervalSince(pending.timestamp))
+            info["pendingAppName"] = pending.appName
+            info["pendingAgeSec"] = String(age)
+        } else {
+            info["pendingAppName"] = "(none)"
+            info["pendingAgeSec"] = "(n/a)"
+        }
+
         // Token map check
         let fileMap = readData(from: tokenMapFilename) != nil
-        let udMap = defaults.data(forKey: tokenMapUDKey) != nil
+        let udMap = getSharedData(forKey: tokenMapUDKey) != nil
         info["tokenMapInFile"] = fileMap ? "YES" : "NO"
         info["tokenMapInUD"] = udMap ? "YES" : "NO"
 
+        for (key, value) in getShieldActionDiagnostics() {
+            info["shieldAction.\(key)"] = value
+        }
+
+        let logSummary = extensionLogSummary()
+        info["extensionLogCount"] = String(logSummary.count)
+        info["extensionLastLog"] = logSummary.last ?? "(none)"
+
         return info
+    }
+
+    // MARK: - Shield Action Diagnostics (Belt-and-Suspenders: File + UserDefaults)
+
+    private let shieldActionDiagnosticsFilename = "shieldActionDiagnostics.json"
+    private let shieldActionDiagnosticsUDKey = AppGroupConstants.shieldActionDiagnosticsKey
+
+    func saveShieldActionDiagnostics(_ diagnostics: [String: String]) {
+        var merged = getShieldActionDiagnostics()
+        for (key, value) in diagnostics {
+            merged[key] = value
+        }
+        merged["updatedAt"] = Date().ISO8601Format()
+
+        guard let data = try? JSONEncoder().encode(merged) else { return }
+        _ = writeData(data, to: shieldActionDiagnosticsFilename)
+        _ = setSharedData(data, forKey: shieldActionDiagnosticsUDKey)
+    }
+
+    /// Extension-safe variant that avoids app-group file writes.
+    func saveShieldActionDiagnosticsSharedDefaultsOnly(_ diagnostics: [String: String]) {
+        var merged = getShieldActionDiagnostics()
+        for (key, value) in diagnostics {
+            merged[key] = value
+        }
+        merged["updatedAt"] = Date().ISO8601Format()
+
+        guard let data = try? JSONEncoder().encode(merged) else { return }
+        _ = setSharedData(data, forKey: shieldActionDiagnosticsUDKey)
+    }
+
+    func getShieldActionDiagnostics() -> [String: String] {
+        if let data = readData(from: shieldActionDiagnosticsFilename),
+           let diagnostics = try? JSONDecoder().decode([String: String].self, from: data) {
+            return diagnostics
+        }
+
+        if let data = getSharedData(forKey: shieldActionDiagnosticsUDKey),
+           let diagnostics = try? JSONDecoder().decode([String: String].self, from: data) {
+            return diagnostics
+        }
+
+        return [:]
+    }
+
+    // MARK: - Extension Logs (File-Based)
+
+    private let extensionLogsFilename = "extensionLogs.txt"
+
+    func appendExtensionLog(source: String, message: String, persistToSharedFile: Bool = true) {
+        runtimeLogger.log("[\(source, privacy: .public)] \(message, privacy: .public)")
+
+        guard persistToSharedFile else { return }
+        guard canWriteExtensionLogFile else { return }
+
+        let formatter = ISO8601DateFormatter()
+        let line = "\(formatter.string(from: Date())) [\(source)] \(message)\n"
+        guard let lineData = line.data(using: .utf8) else { return }
+
+        guard let url = fileURL(for: extensionLogsFilename) else {
+            canWriteExtensionLogFile = false
+            runtimeLogger.error("Disabling extension file logs: shared container URL unavailable")
+            return
+        }
+
+        if FileManager.default.fileExists(atPath: url.path) {
+            if let handle = try? FileHandle(forWritingTo: url) {
+                do {
+                    try handle.seekToEnd()
+                    try handle.write(contentsOf: lineData)
+                    try handle.close()
+                } catch {
+                    try? handle.close()
+                    canWriteExtensionLogFile = false
+                    runtimeLogger.error("Disabling extension file logs after append error: \(error.localizedDescription, privacy: .public)")
+                }
+            }
+        } else {
+            do {
+                try lineData.write(to: url, options: .atomic)
+            } catch {
+                canWriteExtensionLogFile = false
+                runtimeLogger.error("Disabling extension file logs after create error: \(error.localizedDescription, privacy: .public)")
+            }
+        }
+    }
+
+    func getExtensionLogs(limit: Int = 50) -> [String] {
+        guard let data = readData(from: extensionLogsFilename),
+              let text = String(data: data, encoding: .utf8) else {
+            return []
+        }
+
+        let lines = text
+            .split(separator: "\n", omittingEmptySubsequences: true)
+            .map(String.init)
+
+        guard limit > 0 else { return lines }
+        return Array(lines.suffix(limit))
+    }
+
+    func clearExtensionLogs() {
+        removeFile(extensionLogsFilename)
+    }
+
+    private func extensionLogSummary() -> (count: Int, last: String?) {
+        guard let data = readData(from: extensionLogsFilename),
+              let text = String(data: data, encoding: .utf8) else {
+            return (0, nil)
+        }
+        let lines = text.split(separator: "\n", omittingEmptySubsequences: true).map(String.init)
+        return (lines.count, lines.last)
     }
 
     // MARK: - App State (UserDefaults — these are only read by the main app)
 
     var isOnboardingComplete: Bool {
-        get { defaults.bool(forKey: AppGroupConstants.onboardingCompleteKey) }
-        set { defaults.set(newValue, forKey: AppGroupConstants.onboardingCompleteKey) }
+        get { appStateDefaults.bool(forKey: AppGroupConstants.onboardingCompleteKey) }
+        set { appStateDefaults.set(newValue, forKey: AppGroupConstants.onboardingCompleteKey) }
     }
 
     var areShieldsActive: Bool {
-        get { defaults.bool(forKey: AppGroupConstants.shieldsActiveKey) }
-        set { defaults.set(newValue, forKey: AppGroupConstants.shieldsActiveKey) }
+        get { appStateDefaults.bool(forKey: AppGroupConstants.shieldsActiveKey) }
+        set { appStateDefaults.set(newValue, forKey: AppGroupConstants.shieldsActiveKey) }
     }
 }

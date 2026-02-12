@@ -5,12 +5,13 @@ import UIKit
 class ShieldConfigurationExtension: ShieldConfigurationDataSource {
 
     override func configuration(shielding application: Application) -> ShieldConfiguration {
-        // Side effect: save the token→name mapping so other parts of the system
-        // can look up display names from opaque ApplicationTokens.
-        // Both localizedDisplayName and token are optional — guard safely.
-        if let name = application.localizedDisplayName, let token = application.token {
-            AppGroupManager.shared.saveTokenName(name, for: token)
-        }
+        // Do not write to app-group files/defaults from this extension.
+        // The managed-settings-shield-configuration sandbox rejects those writes.
+        AppGroupManager.shared.appendExtensionLog(
+            source: "ShieldConfig",
+            message: "configuration hasName=\(application.localizedDisplayName == nil ? "NO" : "YES") hasToken=\(application.token == nil ? "NO" : "YES")",
+            persistToSharedFile: false
+        )
 
         let appName = application.localizedDisplayName ?? "this app"
 

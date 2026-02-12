@@ -22,4 +22,7 @@ enum AppGroupConstants {
 
     /// Bool: whether shields are currently active
     static let shieldsActiveKey = "shieldsActive"
+
+    /// JSON-encoded diagnostics emitted by ShieldActionExtension
+    static let shieldActionDiagnosticsKey = "shieldActionDiagnostics"
 }

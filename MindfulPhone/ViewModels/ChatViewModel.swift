@@ -5,6 +5,8 @@ import Network
 @MainActor
 @Observable
 final class ChatViewModel {
+    private static let pendingRequestMaxAgeSeconds: TimeInterval = 120
+
     var messages: [DisplayMessage] = []
     var inputText: String = ""
     var isLoading: Bool = false
@@ -37,7 +39,9 @@ final class ChatViewModel {
     // MARK: - Load Pending Request
 
     private func loadPendingRequest() {
-        guard let request = AppGroupManager.shared.getPendingUnlockRequest() else {
+        guard let request = AppGroupManager.shared.getPendingUnlockRequest(
+            maxAge: Self.pendingRequestMaxAgeSeconds
+        ) else {
             return
         }
 
