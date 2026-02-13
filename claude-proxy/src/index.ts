@@ -8,37 +8,84 @@ interface Env {
 interface NotifyRequest {
   to: string;
   userName: string;
-  type: "protection_disabled" | "protection_bypassed" | "considering_disable";
+  type: "protection_disabled" | "protection_bypassed" | "considering_disable" | "app_removed";
 }
 
 const EMAIL_FROM = "MindfulPhone <alerts@mindfulphone.app>";
+const REPLY_TO = "noreply@mindfulphone.app";
 
-const EMAIL_TEMPLATES: Record<NotifyRequest["type"], { subject: string; html: (name: string) => string }> = {
+function wrapHtml(body: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>MindfulPhone Alert</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 480px; background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="padding: 24px 32px 16px; text-align: center; border-bottom: 1px solid #eee;">
+              <span style="font-size: 20px; font-weight: 600; color: #1a1a1a;">MindfulPhone</span>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding: 24px 32px; color: #333333; font-size: 15px; line-height: 1.6;">
+              ${body}
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 16px 32px 24px; text-align: center; color: #999999; font-size: 12px; border-top: 1px solid #eee;">
+              You're receiving this because someone added you as their accountability partner on MindfulPhone.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+const EMAIL_TEMPLATES: Record<NotifyRequest["type"], { subject: string; body: (name: string) => string }> = {
   protection_bypassed: {
-    subject: "⚠️ MindfulPhone protection was removed",
-    html: (name) => `
-      <p>Hi,</p>
-      <p><strong>${name}</strong>'s MindfulPhone protection was removed by revoking Screen Time access.</p>
-      <p>This bypasses the normal disable process. You may want to check in with them.</p>
-      <p style="color: #888; font-size: 13px;">— MindfulPhone</p>
+    subject: "MindfulPhone protection was removed",
+    body: (name) => `
+      <p style="margin: 0 0 16px;">Hi,</p>
+      <p style="margin: 0 0 16px;"><strong>${name}</strong>'s MindfulPhone protection was removed by revoking Screen Time access.</p>
+      <p style="margin: 0 0 16px;">This bypasses the normal disable process. You may want to check in with them.</p>
     `,
   },
   protection_disabled: {
     subject: "MindfulPhone was disabled",
-    html: (name) => `
-      <p>Hi,</p>
-      <p><strong>${name}</strong> chose to disable MindfulPhone protection through the app.</p>
-      <p>They went through the 5-minute waiting period before confirming.</p>
-      <p style="color: #888; font-size: 13px;">— MindfulPhone</p>
+    body: (name) => `
+      <p style="margin: 0 0 16px;">Hi,</p>
+      <p style="margin: 0 0 16px;"><strong>${name}</strong> chose to disable MindfulPhone protection through the app.</p>
+      <p style="margin: 0 0 16px;">They went through the 5-minute waiting period before confirming.</p>
     `,
   },
   considering_disable: {
     subject: "MindfulPhone disable timer started",
-    html: (name) => `
-      <p>Hi,</p>
-      <p><strong>${name}</strong> started the 5-minute timer to disable MindfulPhone.</p>
-      <p>They may change their mind — no action needed yet.</p>
-      <p style="color: #888; font-size: 13px;">— MindfulPhone</p>
+    body: (name) => `
+      <p style="margin: 0 0 16px;">Hi,</p>
+      <p style="margin: 0 0 16px;"><strong>${name}</strong> started the 5-minute timer to disable MindfulPhone.</p>
+      <p style="margin: 0 0 16px;">They may change their mind — no action needed yet.</p>
+    `,
+  },
+  app_removed: {
+    subject: "Apps removed from MindfulPhone",
+    body: (name) => `
+      <p style="margin: 0 0 16px;">Hi,</p>
+      <p style="margin: 0 0 16px;"><strong>${name}</strong> removed one or more apps from MindfulPhone's blocked list.</p>
+      <p style="margin: 0 0 16px;">They went through the 5-minute waiting period before confirming.</p>
     `,
   },
 };
@@ -143,9 +190,13 @@ async function handleNotify(request: Request, env: Env, clientIP: string): Promi
       },
       body: JSON.stringify({
         from: EMAIL_FROM,
+        reply_to: REPLY_TO,
         to: [body.to],
         subject: template.subject,
-        html: template.html(body.userName),
+        html: wrapHtml(template.body(body.userName)),
+        headers: {
+          "X-Entity-Ref-ID": crypto.randomUUID(),
+        },
       }),
     });
 

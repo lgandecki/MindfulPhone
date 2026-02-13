@@ -263,17 +263,18 @@ final class ChatViewModel {
         guard let context = modelContext else { return [] }
 
         let descriptor = FetchDescriptor<UnlockRecord>(
-            predicate: #Predicate { $0.wasApproved == true },
             sortBy: [SortDescriptor(\.requestedAt, order: .reverse)]
         )
         guard let records = try? context.fetch(descriptor) else { return [] }
 
-        return records.prefix(50).map { record in
+        return records.prefix(30).map { record in
             let ago = relativeTimeString(from: record.requestedAt)
             return UnlockHistorySummary(
                 appName: record.appName,
                 reason: record.reason,
-                timeAgo: ago
+                timeAgo: ago,
+                wasApproved: record.wasApproved,
+                durationMinutes: record.durationMinutes
             )
         }
     }

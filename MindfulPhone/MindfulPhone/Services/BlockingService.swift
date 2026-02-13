@@ -25,6 +25,12 @@ final class BlockingService: ObservableObject {
         authorizationStatus == .approved
     }
 
+    /// Whether shields are actually present in the ManagedSettings store.
+    var hasActiveShields: Bool {
+        guard let apps = store.shield.applications else { return false }
+        return !apps.isEmpty
+    }
+
     // MARK: - Shield Policy (Hybrid: Per-App + Category Catch-All)
 
     /// Applies per-app shielding. Each blocked app gets its own shield,

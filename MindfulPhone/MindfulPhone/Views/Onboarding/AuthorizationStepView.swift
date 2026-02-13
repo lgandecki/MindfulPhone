@@ -8,17 +8,21 @@ struct AuthorizationStepView: View {
             Spacer()
 
             Image(systemName: "faceid")
-                .font(.system(size: 64))
-                .foregroundStyle(.blue)
+                .font(.system(size: 56))
+                .foregroundStyle(Color.brandSoftPlum)
+                .frame(width: 88, height: 88)
+                .background(Color.brandLavender.opacity(0.2))
+                .clipShape(RoundedRectangle(cornerRadius: 22))
 
             VStack(spacing: 12) {
                 Text("Authorization Required")
                     .font(.title)
                     .fontWeight(.bold)
+                    .foregroundStyle(Color.brandDeepPlum)
 
-                Text("MindfulPhone uses Screen Time's Family Controls to manage app access. You'll authorize with Face ID or Touch ID.")
+                Text("MindfulPhone uses Screen Time to manage app access. You'll authorize with Face ID or Touch ID.")
                     .font(.body)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.brandSoftPlum.opacity(0.7))
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal)
@@ -39,22 +43,16 @@ struct AuthorizationStepView: View {
                         }
                     } label: {
                         Text("Authorize with Face ID")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(BrandButtonStyle())
                 }
 
                 Button {
                     viewModel.advance()
                 } label: {
                     Text("Continue")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(BrandSecondaryButtonStyle(isDisabled: !viewModel.isAuthorized))
                 .disabled(!viewModel.isAuthorized)
             }
             .padding(.horizontal, 24)

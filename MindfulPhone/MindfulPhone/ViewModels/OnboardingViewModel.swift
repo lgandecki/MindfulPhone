@@ -8,6 +8,8 @@ final class OnboardingViewModel {
     var currentStep: OnboardingStep = .welcome
     var isAuthorized = false
     var isActivating = false
+    var userName = ""
+    var partnerEmail = ""
 
     // App selection (includeEntireCategory expands category selections into individual app tokens)
     var allAppsSelection = FamilyActivitySelection(includeEntireCategory: true)
@@ -16,6 +18,7 @@ final class OnboardingViewModel {
         case welcome
         case authorization
         case appSelection
+        case partnerSetup
         case activate
 
         var title: String {
@@ -23,6 +26,7 @@ final class OnboardingViewModel {
             case .welcome: return "Welcome"
             case .authorization: return "Authorization"
             case .appSelection: return "Block Apps"
+            case .partnerSetup: return "Partner"
             case .activate: return "Activate"
             }
         }
@@ -66,6 +70,16 @@ final class OnboardingViewModel {
 
         _ = await NotificationService.requestPermission()
 
+        // Persist partner info if provided
+        let trimmedName = userName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedEmail = partnerEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedName.isEmpty {
+            AppGroupManager.shared.userName = trimmedName
+        }
+        if !trimmedEmail.isEmpty {
+            AppGroupManager.shared.partnerEmail = trimmedEmail
+        }
+
         // Save all-apps selection for later reapply cycles
         if let data = try? JSONEncoder().encode(allAppsSelection) {
             AppGroupManager.shared.saveAllAppsSelection(data)
@@ -83,6 +97,7 @@ final class OnboardingViewModel {
         )
 
         AppGroupManager.shared.isOnboardingComplete = true
+        AppGroupManager.shared.activationDate = Date()
         isActivating = false
     }
 }

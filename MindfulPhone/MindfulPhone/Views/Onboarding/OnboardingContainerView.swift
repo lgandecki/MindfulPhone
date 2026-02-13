@@ -5,34 +5,45 @@ struct OnboardingContainerView: View {
     let onComplete: () -> Void
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Progress indicator
-            HStack(spacing: 8) {
-                ForEach(OnboardingViewModel.OnboardingStep.allCases, id: \.rawValue) { step in
-                    Capsule()
-                        .fill(step.rawValue <= viewModel.currentStep.rawValue ? Color.blue : Color.secondary.opacity(0.3))
-                        .frame(height: 4)
+        ZStack {
+            BrandGradientBackground()
+
+            VStack(spacing: 0) {
+                // Progress indicator
+                HStack(spacing: 8) {
+                    ForEach(OnboardingViewModel.OnboardingStep.allCases, id: \.rawValue) { step in
+                        Capsule()
+                            .fill(
+                                step.rawValue <= viewModel.currentStep.rawValue
+                                    ? Color.brandDeepPlum
+                                    : Color.brandLavender.opacity(0.3)
+                            )
+                            .frame(height: 4)
+                    }
                 }
+                .padding(.horizontal, 24)
+                .padding(.top, 12)
+
+                // Content
+                TabView(selection: $viewModel.currentStep) {
+                    WelcomeStepView(onContinue: { viewModel.advance() })
+                        .tag(OnboardingViewModel.OnboardingStep.welcome)
+
+                    AuthorizationStepView(viewModel: viewModel)
+                        .tag(OnboardingViewModel.OnboardingStep.authorization)
+
+                    AppSelectionStepView(viewModel: viewModel)
+                        .tag(OnboardingViewModel.OnboardingStep.appSelection)
+
+                    PartnerSetupStepView(viewModel: viewModel)
+                        .tag(OnboardingViewModel.OnboardingStep.partnerSetup)
+
+                    ActivateStepView(viewModel: viewModel, onComplete: onComplete)
+                        .tag(OnboardingViewModel.OnboardingStep.activate)
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .animation(.easeInOut, value: viewModel.currentStep)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 12)
-
-            // Content
-            TabView(selection: $viewModel.currentStep) {
-                WelcomeStepView(onContinue: { viewModel.advance() })
-                    .tag(OnboardingViewModel.OnboardingStep.welcome)
-
-                AuthorizationStepView(viewModel: viewModel)
-                    .tag(OnboardingViewModel.OnboardingStep.authorization)
-
-                AppSelectionStepView(viewModel: viewModel)
-                    .tag(OnboardingViewModel.OnboardingStep.appSelection)
-
-                ActivateStepView(viewModel: viewModel, onComplete: onComplete)
-                    .tag(OnboardingViewModel.OnboardingStep.activate)
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .animation(.easeInOut, value: viewModel.currentStep)
         }
     }
 }

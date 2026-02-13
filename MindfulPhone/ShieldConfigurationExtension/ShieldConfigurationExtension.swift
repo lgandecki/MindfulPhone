@@ -4,6 +4,12 @@ import UIKit
 
 class ShieldConfigurationExtension: ShieldConfigurationDataSource {
 
+    // Brand colors (matching Theme.swift)
+    private let brandDeepPlum = UIColor(red: 0.16, green: 0.11, blue: 0.24, alpha: 1)
+    private let brandSoftPlum = UIColor(red: 0.29, green: 0.20, blue: 0.38, alpha: 1)
+    private let brandWarmCream = UIColor(red: 0.99, green: 0.96, blue: 0.94, alpha: 1)
+    private let brandLavender = UIColor(red: 0.72, green: 0.66, blue: 0.79, alpha: 1)
+
     override func configuration(shielding application: Application) -> ShieldConfiguration {
         let appName = application.localizedDisplayName ?? "this app"
 
@@ -22,25 +28,27 @@ class ShieldConfigurationExtension: ShieldConfigurationDataSource {
             showAlwaysAllow = true
         }
 
+        let icon = UIImage(named: "MascotIcon")
+
         return ShieldConfiguration(
             backgroundBlurStyle: nil,
-            backgroundColor: .systemBackground,
-            icon: UIImage(systemName: "brain.head.profile"),
+            backgroundColor: brandWarmCream,
+            icon: icon,
             title: ShieldConfiguration.Label(
                 text: "\(appName) is blocked",
-                color: .label
+                color: brandDeepPlum
             ),
             subtitle: ShieldConfiguration.Label(
                 text: "Take a moment to reflect on whether you need \(appName) right now.",
-                color: .secondaryLabel
+                color: brandSoftPlum
             ),
             primaryButtonLabel: ShieldConfiguration.Label(
                 text: "Request Access",
                 color: .white
             ),
-            primaryButtonBackgroundColor: .systemBlue,
+            primaryButtonBackgroundColor: brandDeepPlum,
             secondaryButtonLabel: showAlwaysAllow
-                ? ShieldConfiguration.Label(text: "Always Allow", color: .systemGreen)
+                ? ShieldConfiguration.Label(text: "Always Allow", color: brandLavender)
                 : nil
         )
     }

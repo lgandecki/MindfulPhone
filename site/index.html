@@ -194,6 +194,7 @@
       text-align: center;
       max-width: 720px;
       z-index: 1;
+      animation: fadeIn 1s ease both;
     }
 
     .hero-tagline {
@@ -209,7 +210,6 @@
       border-radius: 100px;
       margin-bottom: 2rem;
       border: 1px solid rgba(184, 169, 201, 0.3);
-      animation: fadeUp 0.8s ease both;
     }
 
     .hero h1 {
@@ -218,7 +218,6 @@
       letter-spacing: -0.03em;
       color: var(--deep-plum);
       margin-bottom: 1.5rem;
-      animation: fadeUp 0.8s ease 0.15s both;
     }
 
     .hero h1 em {
@@ -236,7 +235,6 @@
       color: var(--text-secondary);
       max-width: 540px;
       margin: 0 auto 2.5rem;
-      animation: fadeUp 0.8s ease 0.3s both;
     }
 
     .hero-cta-group {
@@ -244,7 +242,6 @@
       align-items: center;
       justify-content: center;
       gap: 1rem;
-      animation: fadeUp 0.8s ease 0.45s both;
       flex-wrap: wrap;
     }
 
@@ -265,22 +262,23 @@
       cursor: not-allowed;
       opacity: 0.5;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
       transition: all 0.3s ease;
     }
 
     .btn-primary .badge {
       position: absolute;
-      top: -10px;
-      right: -10px;
+      top: -8px;
+      right: -8px;
       background: var(--golden-glow);
       color: var(--deep-plum);
       font-size: 0.6rem;
       font-weight: 600;
-      padding: 0.2rem 0.5rem;
+      padding: 0.25rem 0.6rem;
       border-radius: 100px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
     .btn-secondary {
@@ -306,7 +304,6 @@
 
     .hero-image {
       margin-top: 4rem;
-      animation: fadeUp 1s ease 0.6s both;
       z-index: 1;
     }
 
@@ -618,7 +615,7 @@
 
     /* ─── CTA / FOOTER ─── */
     .cta-section {
-      padding: 8rem 2rem;
+      padding: 6rem 2rem 4rem;
       background: var(--deep-plum);
       text-align: center;
       position: relative;
@@ -720,7 +717,7 @@
 
     /* ─── BUILT WITH SECTION ─── */
     .built-with {
-      padding: 4rem 2rem 2rem;
+      padding: 2rem 2rem 1.5rem;
       background: var(--deep-plum);
       text-align: center;
     }
@@ -918,10 +915,10 @@
         <div class="scenario-result"><strong>Claude:</strong> "You're in the middle of your workday and already checked Reddit twice today. Let's revisit this after 5 PM."</div>
       </div>
       <div class="scenario animate-on-scroll">
-        <div class="scenario-emoji">&#x1F680;</div>
-        <div class="scenario-context">7:00 AM &middot; Morning coffee</div>
-        <div class="scenario-quote">"I want to check X for industry news."</div>
-        <div class="scenario-result"><strong>Claude:</strong> "Morning check-in — that's a reasonable routine. Unlocked for 15 minutes. Enjoy your coffee."</div>
+        <div class="scenario-emoji">&#x2615;</div>
+        <div class="scenario-context">10:30 AM &middot; Coffee break</div>
+        <div class="scenario-quote">"Taking a break between tasks, want to see what's happening on X."</div>
+        <div class="scenario-result"><strong>Claude:</strong> "You've been focused all morning and haven't opened any distracting apps today. A short break sounds earned — 15 minutes."</div>
       </div>
     </div>
   </section>
@@ -935,7 +932,7 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
       App Store &middot; <span class="coming-soon">Awaiting Review</span>
     </button>
-    <p class="cta-note">Free to download. Requires a Claude API key.</p>
+    <p class="cta-note">Free to download. Beta usage sponsored by Anthropic.</p>
   </section>
 
   <!-- FOOTER -->
@@ -943,7 +940,7 @@
     <p>Built with <span>Claude</span> during the Anthropic Build Hackathon 2025</p>
   </div>
   <footer>
-    <p>&copy; 2025 MindfulPhone &middot; Made by <a href="#">Lucas Gandecki</a></p>
+    <p>&copy; 2025 MindfulPhone &middot; Made by <a href="#">Łukasz Gandecki</a></p>
   </footer>
 
   <script>

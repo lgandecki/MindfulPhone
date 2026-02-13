@@ -2,6 +2,7 @@ import SwiftUI
 import FamilyControls
 
 struct SettingsView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var viewModel = SettingsViewModel()
     @State private var showingExemptPicker = false
 
@@ -25,10 +26,36 @@ struct SettingsView: View {
                     selection: $viewModel.allAppsSelection
                 )
                 .onChange(of: viewModel.allAppsSelection) {
-                    viewModel.saveUpdatedAppList()
+                    viewModel.handleAppSelectionChange()
                 }
             } footer: {
                 Text("Add newly installed apps to MindfulPhone's managed list.")
+            }
+
+            // MARK: - Accountability Partner
+            Section {
+                TextField("Your first name", text: $viewModel.userName)
+                    .textContentType(.givenName)
+                    .onChange(of: viewModel.userName) {
+                        AppGroupManager.shared.userName = viewModel.userName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                            ? nil
+                            : viewModel.userName.trimmingCharacters(in: .whitespacesAndNewlines)
+                    }
+
+                TextField("Partner's email", text: $viewModel.partnerEmail)
+                    .textContentType(.emailAddress)
+                    .keyboardType(.emailAddress)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+                    .onChange(of: viewModel.partnerEmail) {
+                        AppGroupManager.shared.partnerEmail = viewModel.partnerEmail.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                            ? nil
+                            : viewModel.partnerEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+                    }
+            } header: {
+                Text("Accountability Partner")
+            } footer: {
+                Text("Your partner will be notified if you bypass or disable protection.")
             }
 
             // MARK: - Active Unlocks
@@ -53,28 +80,93 @@ struct SettingsView: View {
             // MARK: - Danger Zone
             Section {
                 Button(role: .destructive) {
-                    viewModel.showingRevokeConfirmation = true
+                    viewModel.startDisableTimer()
                 } label: {
                     Label("Disable MindfulPhone", systemImage: "xmark.shield")
                 }
-                .confirmationDialog(
-                    "Disable MindfulPhone?",
-                    isPresented: $viewModel.showingRevokeConfirmation,
-                    titleVisibility: .visible
-                ) {
-                    Button("Disable & Remove All Shields", role: .destructive) {
-                        viewModel.revokeAuthorization()
-                    }
-                } message: {
-                    Text("This will remove all app shields and revoke Screen Time authorization. You'll need to go through onboarding again to re-enable.")
-                }
             } header: {
                 Text("Danger Zone")
+            } footer: {
+                Text("Starts a 5-minute countdown. Your accountability partner will be notified.")
             }
         }
         .navigationTitle("Settings")
         .onAppear {
             viewModel.loadSettings()
         }
+        .onChange(of: scenePhase) {
+            if scenePhase != .active {
+                viewModel.resetDisableTimerIfBackgrounded()
+            }
+        }
+        .fullScreenCover(isPresented: $viewModel.showingDisableTimer) {
+            DisableTimerView(viewModel: viewModel)
+        }
+        .alert(
+            "Can't Remove Apps",
+            isPresented: $viewModel.showingRemovalRejected
+        ) {
+            Button("Start 5-Minute Timer") {
+                viewModel.startRemovalTimer()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Removing apps from the blocked list requires a 5-minute waiting period. Your accountability partner will be notified.")
+        }
+        .sheet(isPresented: $viewModel.showingRemovalTimer) {
+            RemovalTimerView(viewModel: viewModel)
+        }
+    }
+}
+
+// MARK: - Removal Timer View
+
+private struct RemovalTimerView: View {
+    @Bindable var viewModel: SettingsViewModel
+
+    var body: some View {
+        VStack(spacing: 32) {
+            Spacer()
+
+            Image(systemName: "clock.badge.exclamationmark")
+                .font(.system(size: 48))
+                .foregroundStyle(.orange)
+
+            VStack(spacing: 12) {
+                Text("Removal Timer")
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Text("Wait for the timer to complete, then try removing apps again.")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+            }
+
+            Text(formattedTime)
+                .font(.system(size: 56, weight: .light, design: .monospaced))
+
+            Spacer()
+
+            Button {
+                viewModel.cancelRemovalTimer()
+            } label: {
+                Text("Cancel")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+            }
+            .buttonStyle(.bordered)
+            .padding(.horizontal, 24)
+        }
+        .padding(24)
+        .interactiveDismissDisabled()
+    }
+
+    private var formattedTime: String {
+        let minutes = viewModel.removalTimeRemaining / 60
+        let seconds = viewModel.removalTimeRemaining % 60
+        return String(format: "%d:%02d", minutes, seconds)
     }
 }

@@ -25,4 +25,13 @@ enum AppGroupConstants {
 
     /// JSON-encoded diagnostics emitted by ShieldActionExtension
     static let shieldActionDiagnosticsKey = "shieldActionDiagnostics"
+
+    /// String: user's first name for accountability notifications
+    static let userNameKey = "userName"
+
+    /// String: accountability partner's email address
+    static let partnerEmailKey = "partnerEmail"
+
+    /// Double (timeIntervalSince1970): when protection was first activated
+    static let activationDateKey = "activationDate"
 }

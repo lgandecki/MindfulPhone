@@ -508,4 +508,28 @@ final class AppGroupManager {
         get { appStateDefaults.bool(forKey: AppGroupConstants.shieldsActiveKey) }
         set { appStateDefaults.set(newValue, forKey: AppGroupConstants.shieldsActiveKey) }
     }
+
+    var userName: String? {
+        get { appStateDefaults.string(forKey: AppGroupConstants.userNameKey) }
+        set { appStateDefaults.set(newValue, forKey: AppGroupConstants.userNameKey) }
+    }
+
+    var partnerEmail: String? {
+        get { appStateDefaults.string(forKey: AppGroupConstants.partnerEmailKey) }
+        set { appStateDefaults.set(newValue, forKey: AppGroupConstants.partnerEmailKey) }
+    }
+
+    var activationDate: Date? {
+        get {
+            let interval = appStateDefaults.double(forKey: AppGroupConstants.activationDateKey)
+            return interval > 0 ? Date(timeIntervalSince1970: interval) : nil
+        }
+        set {
+            if let date = newValue {
+                appStateDefaults.set(date.timeIntervalSince1970, forKey: AppGroupConstants.activationDateKey)
+            } else {
+                appStateDefaults.removeObject(forKey: AppGroupConstants.activationDateKey)
+            }
+        }
+    }
 }

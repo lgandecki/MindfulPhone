@@ -19,17 +19,21 @@ struct AppSelectionStepView: View {
             Spacer()
 
             Image(systemName: "apps.iphone")
-                .font(.system(size: 64))
-                .foregroundStyle(.blue)
+                .font(.system(size: 56))
+                .foregroundStyle(Color.brandSoftPlum)
+                .frame(width: 88, height: 88)
+                .background(Color.brandLavender.opacity(0.2))
+                .clipShape(RoundedRectangle(cornerRadius: 22))
 
             VStack(spacing: 12) {
                 Text("Block Distracting Apps")
                     .font(.title)
                     .fontWeight(.bold)
+                    .foregroundStyle(Color.brandDeepPlum)
 
                 Text("Choose the apps you find most distracting. MindfulPhone will ask you to reflect before opening them.")
                     .font(.body)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.brandSoftPlum.opacity(0.7))
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal)
@@ -37,7 +41,8 @@ struct AppSelectionStepView: View {
             if hasSelection {
                 Text("\(appCount) app\(appCount == 1 ? "" : "s") selected")
                     .font(.subheadline)
-                    .foregroundStyle(overLimit ? .red : .secondary)
+                    .fontWeight(.medium)
+                    .foregroundStyle(overLimit ? .red : Color.brandSoftPlum)
             }
 
             if overLimit {
@@ -53,6 +58,7 @@ struct AppSelectionStepView: View {
             } label: {
                 Label(hasSelection ? "Edit Selection" : "Choose Apps", systemImage: hasSelection ? "pencil.circle" : "plus.circle")
                     .font(.headline)
+                    .foregroundStyle(Color.brandSoftPlum)
             }
             .familyActivityPicker(
                 isPresented: $showingPicker,
@@ -65,11 +71,8 @@ struct AppSelectionStepView: View {
                 viewModel.advance()
             } label: {
                 Text("Continue")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(BrandButtonStyle(isDisabled: !hasSelection || overLimit))
             .disabled(!hasSelection || overLimit)
             .padding(.horizontal, 24)
         }

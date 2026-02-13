@@ -5,22 +5,31 @@ struct ActivateStepView: View {
     @Bindable var viewModel: OnboardingViewModel
     let onComplete: () -> Void
 
+    private var hasPartner: Bool {
+        !viewModel.userName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && !viewModel.partnerEmail.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
 
             Image(systemName: "shield.checkered")
-                .font(.system(size: 64))
-                .foregroundStyle(.blue)
+                .font(.system(size: 56))
+                .foregroundStyle(Color.brandSoftPlum)
+                .frame(width: 88, height: 88)
+                .background(Color.brandLavender.opacity(0.2))
+                .clipShape(RoundedRectangle(cornerRadius: 22))
 
             VStack(spacing: 12) {
                 Text("Ready to Activate")
                     .font(.title)
                     .fontWeight(.bold)
+                    .foregroundStyle(Color.brandDeepPlum)
 
                 Text("Once activated, your selected apps will be blocked. To open one, you'll have a quick conversation with Claude AI about why you need it.")
                     .font(.body)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.brandSoftPlum.opacity(0.7))
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal)
@@ -34,6 +43,10 @@ struct ActivateStepView: View {
                     text: "Distracting apps selected",
                     isDone: !viewModel.allAppsSelection.applicationTokens.isEmpty
                 )
+                ChecklistRow(
+                    text: "Accountability partner \(hasPartner ? "added" : "(optional)")",
+                    isDone: hasPartner
+                )
             }
 
             Spacer()
@@ -46,16 +59,12 @@ struct ActivateStepView: View {
             } label: {
                 if viewModel.isActivating {
                     ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
+                        .tint(.white)
                 } else {
                     Text("Activate MindfulPhone")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
                 }
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(BrandButtonStyle(isDisabled: viewModel.isActivating))
             .disabled(viewModel.isActivating)
             .padding(.horizontal, 24)
         }
@@ -70,9 +79,9 @@ private struct ChecklistRow: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: isDone ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(isDone ? .green : .secondary)
+                .foregroundStyle(isDone ? .green : Color.brandLavender)
             Text(text)
-                .foregroundStyle(isDone ? .primary : .secondary)
+                .foregroundStyle(isDone ? Color.brandDeepPlum : Color.brandSoftPlum.opacity(0.5))
         }
     }
 }

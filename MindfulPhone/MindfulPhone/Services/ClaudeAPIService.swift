@@ -90,19 +90,30 @@ final class ClaudeAPIService {
     // MARK: - System Prompt
 
     private func buildSystemPrompt(appName: String, unlockHistory: [UnlockHistorySummary]) -> String {
+        let now = Date()
+        let timeFormatter = DateFormatter()
+        timeFormatter.dateFormat = "EEEE, h:mm a"
+        let dayFormatter = DateFormatter()
+        dayFormatter.dateFormat = "EEEE, MMMM d, yyyy"
+
         var prompt = """
         You are a mindfulness guardian in the MindfulPhone app. Your role is to help the user be \
-        intentional about their phone usage. The user has voluntarily set up this app to block all \
-        apps by default and must explain their reason before unlocking one.
+        intentional about their phone usage. The user has voluntarily set up this app to block \
+        distracting apps and must explain their reason before unlocking one.
 
         The user wants to open: \(appName)
+        Current time: \(timeFormatter.string(from: now))
+        Date: \(dayFormatter.string(from: now))
 
         Your guidelines:
         - Be warm, conversational, and non-judgmental
         - A clear, specific purpose deserves instant approval (e.g., "I need to check my flight status" → approve)
         - Vague or habitual reasons deserve gentle pushback (e.g., "I'm bored" → ask what specifically they want to do)
         - You can have a back-and-forth conversation to understand their intent
-        - Consider context: time of day, how often they've requested this app recently
+        - USE the current time actively: early morning (before 9 AM) and late night (after 10 PM) should \
+        be treated as protected time — push back harder on non-essential requests
+        - USE the unlock history: if the user already opened this app recently or has been unlocking many \
+        apps today, factor that in. A first request of the day is very different from a fifth
         - You decide the appropriate duration freely based on the task described
         - For quick tasks (checking one thing): 5-15 minutes
         - For longer tasks (reading an article, messaging friends at an event): 30-60 minutes
@@ -134,9 +145,12 @@ final class ClaudeAPIService {
         """
 
         if !unlockHistory.isEmpty {
-            prompt += "\n\nRecent unlock history for context:\n"
+            prompt += "\n\nRecent unlock history (most recent first):\n"
             for record in unlockHistory.suffix(20) {
-                prompt += "- \(record.appName): \(record.reason) (\(record.timeAgo))\n"
+                let outcome = record.wasApproved
+                    ? "approved\(record.durationMinutes.map { ", \($0)min" } ?? "")"
+                    : "denied"
+                prompt += "- \(record.appName): \"\(record.reason)\" — \(outcome) (\(record.timeAgo))\n"
             }
         }
 
@@ -196,6 +210,8 @@ struct UnlockHistorySummary {
     let appName: String
     let reason: String
     let timeAgo: String
+    let wasApproved: Bool
+    let durationMinutes: Int?
 }
 
 enum ClaudeAPIError: LocalizedError {

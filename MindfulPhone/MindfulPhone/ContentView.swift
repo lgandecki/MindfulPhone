@@ -1,32 +1,50 @@
 import SwiftUI
 import SwiftData
 import UserNotifications
+import FamilyControls
 
 struct ContentView: View {
     private static let pendingRequestMaxAgeSeconds: TimeInterval = 120
 
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.modelContext) private var modelContext
     @State private var isOnboardingComplete = AppGroupManager.shared.isOnboardingComplete
     @State private var hasPendingRequest = AppGroupManager.shared.getPendingUnlockRequest(
         maxAge: Self.pendingRequestMaxAgeSeconds
     ) != nil
+    @State private var showSplash = true
 
     var body: some View {
-        Group {
-            if !isOnboardingComplete {
-                OnboardingContainerView {
-                    isOnboardingComplete = true
+        ZStack {
+            Group {
+                if !isOnboardingComplete {
+                    OnboardingContainerView {
+                        isOnboardingComplete = true
+                    }
+                } else if hasPendingRequest {
+                    NavigationStack {
+                        ChatView()
+                    }
+                } else {
+                    MainTabView()
                 }
-            } else if hasPendingRequest {
-                NavigationStack {
-                    ChatView()
-                }
-            } else {
-                MainTabView()
+            }
+
+            if showSplash {
+                Image("SplashImage")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+                    .transition(.opacity)
             }
         }
         .onAppear {
             refreshState()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                withAnimation(.easeOut(duration: 0.5)) {
+                    showSplash = false
+                }
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             refreshState()
@@ -42,10 +60,28 @@ struct ContentView: View {
     }
 
     private func refreshState() {
-        hasPendingRequest = AppGroupManager.shared.getPendingUnlockRequest(
+        // Tamper detection: check if protection was bypassed
+        let manager = AppGroupManager.shared
+        let blocking = BlockingService.shared
+
+        if manager.isOnboardingComplete {
+            let authStatus = AuthorizationCenter.shared.authorizationStatus
+            if authStatus != .approved {
+                // User revoked Family Controls authorization entirely
+                handleTamperDetected()
+                return
+            }
+            if manager.areShieldsActive && !blocking.hasActiveShields {
+                // User revoked and re-enabled auth — shields are gone from the store
+                handleTamperDetected()
+                return
+            }
+        }
+
+        hasPendingRequest = manager.getPendingUnlockRequest(
             maxAge: Self.pendingRequestMaxAgeSeconds
         ) != nil
-        isOnboardingComplete = AppGroupManager.shared.isOnboardingComplete
+        isOnboardingComplete = manager.isOnboardingComplete
         UnlockManager.shared.recheckExpiredUnlocks()
 
         if !hasPendingRequest {
@@ -53,6 +89,43 @@ struct ContentView: View {
                 await recoverPendingRequestFromNotificationsIfNeeded()
             }
         }
+    }
+
+    private func handleTamperDetected() {
+        let manager = AppGroupManager.shared
+        let email = manager.partnerEmail
+        let userName = manager.userName ?? "Someone"
+
+        NSLog("[TamperDetect] Detected! email=%@, userName=%@", email ?? "nil", userName)
+
+        // Send notification in a detached task — completely independent of
+        // view lifecycle so it survives the state reset and re-render below.
+        if let email {
+            NSLog("[TamperDetect] Sending protection_bypassed notification to %@", email)
+            Task.detached {
+                await NotifyService.shared.notify(.protectionBypassed, email: email, userName: userName)
+                NSLog("[TamperDetect] Notification request completed")
+            }
+        } else {
+            NSLog("[TamperDetect] No partner email configured, skipping notification")
+        }
+
+        // Reset all state — triggers view re-render to onboarding
+        manager.isOnboardingComplete = false
+        manager.areShieldsActive = false
+        manager.activationDate = nil
+
+        // Clear SwiftData history
+        do {
+            try modelContext.delete(model: Conversation.self)
+            try modelContext.delete(model: ChatMessage.self)
+            try modelContext.delete(model: UnlockRecord.self)
+        } catch {
+            NSLog("[ContentView] Failed to clear SwiftData on tamper: %@", error.localizedDescription)
+        }
+
+        isOnboardingComplete = false
+        hasPendingRequest = false
     }
 
     @MainActor
@@ -187,6 +260,14 @@ struct DashboardView: View {
     @State private var diagnostics: [String: String] = [:]
     @State private var extensionLogs: [String] = []
 
+    private var streakText: String {
+        guard let activation = AppGroupManager.shared.activationDate else {
+            return "MindfulPhone Active"
+        }
+        let days = Calendar.current.dateComponents([.day], from: activation, to: Date()).day ?? 0
+        return "Protected for \(days) \(days == 1 ? "day" : "days")"
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -196,7 +277,7 @@ struct DashboardView: View {
                         .font(.system(size: 48))
                         .foregroundStyle(.green)
 
-                    Text("MindfulPhone Active")
+                    Text(streakText)
                         .font(.title2)
                         .fontWeight(.semibold)
 
