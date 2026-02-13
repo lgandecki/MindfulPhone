@@ -25,8 +25,8 @@ struct OnboardingContainerView: View {
                 AuthorizationStepView(viewModel: viewModel)
                     .tag(OnboardingViewModel.OnboardingStep.authorization)
 
-                ExemptAppsStepView(viewModel: viewModel)
-                    .tag(OnboardingViewModel.OnboardingStep.exemptApps)
+                AppSelectionStepView(viewModel: viewModel)
+                    .tag(OnboardingViewModel.OnboardingStep.appSelection)
 
                 APIKeyStepView(viewModel: viewModel)
                     .tag(OnboardingViewModel.OnboardingStep.apiKey)

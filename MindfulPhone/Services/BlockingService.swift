@@ -25,34 +25,39 @@ final class BlockingService: ObservableObject {
         authorizationStatus == .approved
     }
 
-    // MARK: - Shield Policy
+    // MARK: - Shield Policy (Hybrid: Per-App + Category Catch-All)
 
-    /// Applies the "block everything except exempt apps" policy.
-    /// This must be called with the COMPLETE set of exempt tokens every time.
-    func applyShieldAll(exemptTokens: Set<ApplicationToken> = []) {
-        store.shield.applicationCategories = .all(except: exemptTokens)
-        store.shield.webDomainCategories = .all()
+    /// Applies per-app shielding. Each blocked app gets its own shield,
+    /// so ShieldActionExtension receives the specific ApplicationToken.
+    func applyShields(
+        blockTokens: Set<ApplicationToken>,
+        exemptTokens: Set<ApplicationToken>
+    ) {
+        store.shield.applications = blockTokens.isEmpty ? nil : blockTokens
+        store.shield.applicationCategories = nil
+        store.shield.webDomainCategories = nil
         AppGroupManager.shared.areShieldsActive = true
+        NSLog("[BlockingService] Applied per-app shields: block=%d exempt=%d",
+              blockTokens.count, exemptTokens.count)
     }
 
-    /// Temporarily removes the shield for a specific app token
-    /// by adding it to the exempt set and reapplying the full policy.
+    /// Temporarily removes the shield for a specific app token.
     func temporarilyUnshield(token: ApplicationToken) {
-        var exemptTokens = getAllExemptTokens()
-        exemptTokens.insert(token)
-        applyShieldAll(exemptTokens: exemptTokens)
+        store.shield.applications?.remove(token)
     }
 
-    /// Re-applies the shield for a specific app by removing it
-    /// from the exempt set and reapplying the full policy.
+    /// Re-applies the shield for a specific app token.
     func reapplyShield(for token: ApplicationToken) {
-        var exemptTokens = getAllExemptTokens()
-        exemptTokens.remove(token)
-        applyShieldAll(exemptTokens: exemptTokens)
+        if store.shield.applications != nil {
+            store.shield.applications?.insert(token)
+        } else {
+            store.shield.applications = [token]
+        }
     }
 
     /// Removes all shields entirely.
     func removeAllShields() {
+        store.shield.applications = nil
         store.shield.applicationCategories = nil
         store.shield.webDomainCategories = nil
         AppGroupManager.shared.areShieldsActive = false
@@ -60,26 +65,26 @@ final class BlockingService: ObservableObject {
 
     // MARK: - Exempt Token Management
 
-    /// Builds the complete set of currently exempt tokens:
-    /// permanent exemptions + temporarily unlocked apps.
-    func getAllExemptTokens() -> Set<ApplicationToken> {
-        var tokens = Set<ApplicationToken>()
+    /// Loads the saved exempt tokens from persistent storage.
+    func getPersistedExemptTokens() -> Set<ApplicationToken> {
+        AppGroupManager.shared.getExemptTokens()
+    }
 
-        // Add permanently exempt tokens from FamilyActivitySelection
-        if let selectionData = AppGroupManager.shared.getExemptSelectionData(),
-           let selection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: selectionData) {
-            tokens.formUnion(selection.applicationTokens)
+    /// Loads the full set of all-apps tokens from the saved selection.
+    func getPersistedAllAppsTokens() -> Set<ApplicationToken> {
+        guard let data = AppGroupManager.shared.getAllAppsSelectionData(),
+              let selection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data) else {
+            return []
         }
+        return selection.applicationTokens
+    }
 
-        // Add temporarily unlocked tokens from active unlocks
-        let activeUnlocks = AppGroupManager.shared.getActiveUnlocks()
-        for unlock in activeUnlocks where unlock.expiresAt > Date() {
-            if let token = AppGroupManager.shared.decodeToken(from: unlock.tokenData) {
-                tokens.insert(token)
-            }
-        }
-
-        return tokens
+    /// Recomputes and reapplies shields from persisted data.
+    func reapplyFromPersistedData() {
+        let allTokens = getPersistedAllAppsTokens()
+        let exemptTokens = getPersistedExemptTokens()
+        let blockTokens = allTokens.subtracting(exemptTokens)
+        applyShields(blockTokens: blockTokens, exemptTokens: exemptTokens)
     }
 
     /// Revokes Family Controls authorization entirely.

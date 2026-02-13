@@ -13,29 +13,34 @@ final class UnlockManager {
     // MARK: - Unlock App
 
     /// Full unlock lifecycle: unshield, schedule re-block, save record, schedule notifications.
+    /// Returns `true` if unlock succeeded, `false` if token decode failed.
+    @discardableResult
     func unlockApp(
         tokenData: Data,
         appName: String,
         durationMinutes: Int,
         reason: String
-    ) async {
-        guard let token = AppGroupManager.shared.decodeToken(from: tokenData) else {
-            return
-        }
+    ) async -> Bool {
+        NSLog("[UnlockManager] unlockApp called — tokenData size=%d appName=%@ duration=%d",
+              tokenData.count, appName, durationMinutes)
 
-        // 1. Remove shield for this app
+        guard let token = AppGroupManager.shared.decodeToken(from: tokenData) else {
+            NSLog("[UnlockManager] Token decode FAILED — tokenData size=%d", tokenData.count)
+            return false
+        }
+        NSLog("[UnlockManager] Token decoded successfully — per-app unshield")
         BlockingService.shared.temporarilyUnshield(token: token)
 
-        // 2. Create a unique activity name for the re-block timer
+        // Create a unique activity name for the re-block timer
         let activityName = "reblock-\(UUID().uuidString)"
 
-        // 3. Schedule DeviceActivity monitoring to re-block when time expires
+        // Schedule DeviceActivity monitoring to re-block when time expires
         scheduleReblock(
             activityName: DeviceActivityName(rawValue: activityName),
             durationMinutes: durationMinutes
         )
 
-        // 4. Save active unlock record to App Group (extensions read this)
+        // Save active unlock record to App Group (extensions read this)
         let record = ActiveUnlockRecord(
             tokenData: tokenData,
             appName: appName,
@@ -45,9 +50,12 @@ final class UnlockManager {
         )
         AppGroupManager.shared.saveActiveUnlock(record)
 
-        // 5. Schedule notifications
+        // Schedule notifications
         NotificationService.scheduleExpiryWarning(appName: appName, expiresAt: record.expiresAt)
         NotificationService.scheduleExpiryNotification(appName: appName, expiresAt: record.expiresAt)
+
+        NSLog("[UnlockManager] Unlock completed successfully for %@", appName)
+        return true
     }
 
     // MARK: - Schedule Re-block

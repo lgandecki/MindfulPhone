@@ -39,6 +39,19 @@ final class MindfulPhoneAppDelegate: NSObject, UIApplicationDelegate, UNUserNoti
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
+        // If this is an unlock request notification arriving while the app is
+        // in the foreground, save the request and navigate to chat immediately
+        // (the user already tapped "Request Access" on the shield).
+        if notification.request.content.categoryIdentifier == "UNLOCK_REQUEST" {
+            persistPendingRequestFromNotification(
+                userInfo: notification.request.content.userInfo
+            )
+            NotificationCenter.default.post(
+                name: .unlockRequestNotificationTapped,
+                object: nil,
+                userInfo: notification.request.content.userInfo
+            )
+        }
         completionHandler([.banner, .list, .sound])
     }
 
@@ -62,17 +75,24 @@ final class MindfulPhoneAppDelegate: NSObject, UIApplicationDelegate, UNUserNoti
         completionHandler()
     }
 
+    private static let pendingRequestMaxAgeSeconds: TimeInterval = 120
+
     private func persistPendingRequestFromNotification(userInfo: [AnyHashable: Any]) {
         saveExtensionDiagnosticsFromNotification(userInfo: userInfo)
 
-        // If extension couldn't persist to App Group, recover the request payload from notification data.
-        guard AppGroupManager.shared.getPendingUnlockRequest() == nil else {
+        // If a FRESH pending request already exists, skip re-saving.
+        // Use maxAge so stale leftover requests don't block new ones.
+        guard AppGroupManager.shared.getPendingUnlockRequest(
+            maxAge: Self.pendingRequestMaxAgeSeconds
+        ) == nil else {
             AppGroupManager.shared.appendExtensionLog(
                 source: "MainApp",
-                message: "pending request already exists, skip notification recovery"
+                message: "fresh pending request already exists, skip notification recovery"
             )
             return
         }
+        // Clear any stale request before saving the new one
+        AppGroupManager.shared.clearPendingUnlockRequest()
         guard let appName = userInfo["appName"] as? String,
               let tokenDataBase64 = userInfo["tokenDataBase64"] as? String,
               let tokenData = Data(base64Encoded: tokenDataBase64) else {
@@ -90,7 +110,7 @@ final class MindfulPhoneAppDelegate: NSObject, UIApplicationDelegate, UNUserNoti
         ])
         AppGroupManager.shared.appendExtensionLog(
             source: "MainApp",
-            message: "recovered request from notification app=\(appName) success=\(result.success)"
+            message: "recovered request from notification app=\(appName) tokenDataSize=\(tokenData.count) success=\(result.success)"
         )
     }
 

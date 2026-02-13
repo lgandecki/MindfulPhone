@@ -7,28 +7,28 @@ struct SettingsView: View {
 
     var body: some View {
         List {
-            // MARK: - Exempt Apps
+            // MARK: - App List
             Section {
-                let count = viewModel.activitySelection.applicationTokens.count
+                let count = viewModel.allAppsSelection.applicationTokens.count
                 Button {
                     showingExemptPicker = true
                 } label: {
                     HStack {
-                        Label("Always-Allowed Apps", systemImage: "app.badge.checkmark")
+                        Label("Update App List", systemImage: "apps.iphone")
                         Spacer()
-                        Text("\(count)")
+                        Text("\(count) apps")
                             .foregroundStyle(.secondary)
                     }
                 }
                 .familyActivityPicker(
                     isPresented: $showingExemptPicker,
-                    selection: $viewModel.activitySelection
+                    selection: $viewModel.allAppsSelection
                 )
-                .onChange(of: viewModel.activitySelection) {
-                    viewModel.saveExemptApps()
+                .onChange(of: viewModel.allAppsSelection) {
+                    viewModel.saveUpdatedAppList()
                 }
             } footer: {
-                Text("These apps will never be blocked. Maximum ~50 apps.")
+                Text("Add newly installed apps to MindfulPhone's managed list.")
             }
 
             // MARK: - API Key

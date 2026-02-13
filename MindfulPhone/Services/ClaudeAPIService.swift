@@ -5,6 +5,8 @@ struct ClaudeResponse {
     let message: String
     let isApproved: Bool
     let approvedMinutes: Int?
+    let extractedAppName: String?
+    let isPermanentExempt: Bool
 }
 
 final class ClaudeAPIService {
@@ -113,12 +115,28 @@ final class ClaudeAPIService {
         - For work/productivity tasks: up to 120 minutes
         - You CAN deny access if the reason is clearly just mindless scrolling with no purpose
 
-        When you decide to approve, end your message naturally but include this exact tag at the very end:
-        [APPROVED:XX] where XX is the number of minutes you're granting.
+        RESPONSE TAGS (include at the very end of your message, all that apply):
 
-        Example: "That makes sense! Checking your flight details is definitely important. Go ahead and take care of that. [APPROVED:10]"
+        1. When you approve a TEMPORARY unlock:
+           [APPROVED:XX] where XX is the number of minutes.
 
-        Do NOT include the [APPROVED:XX] tag unless you are actually approving the request.
+        2. When you approve a PERMANENT exemption (the user asks to never block this app again, \
+        and the app is clearly essential — e.g., Phone, Messages, Maps, banking, authentication):
+           [APPROVED:0][PERMANENT_EXEMPT]
+
+        3. When the app name is "this app" (first encounter — iOS limitation), the user will tell \
+        you which app they mean. Extract the name and include:
+           [APP_NAME:ExactAppName]
+           Use the exact app name as the user stated it (e.g., "Instagram", "Messages", "Google Maps"). \
+        Include this tag in EVERY response when the app name is "this app", even if you haven't approved yet.
+
+        Example responses:
+        - "Checking your flight? Absolutely. [APP_NAME:United Airlines][APPROVED:15]"
+        - "Messages is clearly essential — I'll unblock it permanently for you. [APP_NAME:Messages][APPROVED:0][PERMANENT_EXEMPT]"
+        - "You want to open Instagram. What specifically do you need to do there? [APP_NAME:Instagram]"
+
+        Do NOT include [APPROVED:XX] unless you are actually approving. \
+        Do NOT grant [PERMANENT_EXEMPT] for social media, games, or entertainment apps.
         """
 
         if !unlockHistory.isEmpty {
@@ -134,22 +152,47 @@ final class ClaudeAPIService {
     // MARK: - Response Parsing
 
     private func parseResponse(_ text: String) -> ClaudeResponse {
-        // Look for [APPROVED:XX] pattern at the end of the message
-        let pattern = #"\[APPROVED:(\d+)\]\s*$"#
-        if let regex = try? NSRegularExpression(pattern: pattern),
-           let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
-           let minutesRange = Range(match.range(at: 1), in: text) {
-            let minutes = Int(text[minutesRange]) ?? 15
-            // Remove the tag from the displayed message
-            let cleanMessage = text.replacingOccurrences(
-                of: #"\s*\[APPROVED:\d+\]\s*$"#,
-                with: "",
-                options: .regularExpression
-            )
-            return ClaudeResponse(message: cleanMessage, isApproved: true, approvedMinutes: minutes)
-        }
+        var remaining = text
 
-        return ClaudeResponse(message: text, isApproved: false, approvedMinutes: nil)
+        // Extract [APP_NAME:xxx]
+        var extractedAppName: String?
+        let appNamePattern = #"\[APP_NAME:([^\]]+)\]"#
+        if let regex = try? NSRegularExpression(pattern: appNamePattern),
+           let match = regex.firstMatch(in: remaining, range: NSRange(remaining.startIndex..., in: remaining)),
+           let nameRange = Range(match.range(at: 1), in: remaining) {
+            extractedAppName = String(remaining[nameRange])
+        }
+        remaining = remaining.replacingOccurrences(
+            of: #"\s*\[APP_NAME:[^\]]+\]"#, with: "", options: .regularExpression
+        )
+
+        // Extract [PERMANENT_EXEMPT]
+        let isPermanentExempt = remaining.contains("[PERMANENT_EXEMPT]")
+        remaining = remaining.replacingOccurrences(
+            of: #"\s*\[PERMANENT_EXEMPT\]"#, with: "", options: .regularExpression
+        )
+
+        // Extract [APPROVED:XX]
+        let approvedPattern = #"\[APPROVED:(\d+)\]"#
+        var isApproved = false
+        var approvedMinutes: Int?
+        if let regex = try? NSRegularExpression(pattern: approvedPattern),
+           let match = regex.firstMatch(in: remaining, range: NSRange(remaining.startIndex..., in: remaining)),
+           let minutesRange = Range(match.range(at: 1), in: remaining) {
+            isApproved = true
+            approvedMinutes = Int(remaining[minutesRange]) ?? 15
+        }
+        remaining = remaining.replacingOccurrences(
+            of: #"\s*\[APPROVED:\d+\]"#, with: "", options: .regularExpression
+        )
+
+        return ClaudeResponse(
+            message: remaining.trimmingCharacters(in: .whitespacesAndNewlines),
+            isApproved: isApproved,
+            approvedMinutes: approvedMinutes,
+            extractedAppName: extractedAppName,
+            isPermanentExempt: isPermanentExempt
+        )
     }
 }
 

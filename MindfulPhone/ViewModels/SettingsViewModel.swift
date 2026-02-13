@@ -1,10 +1,11 @@
 import Foundation
 import FamilyControls
+import ManagedSettings
 
 @MainActor
 @Observable
 final class SettingsViewModel {
-    var activitySelection = FamilyActivitySelection()
+    var allAppsSelection = FamilyActivitySelection(includeEntireCategory: true)
     var apiKey = ""
     var isTestingKey = false
     var apiKeyError: String?
@@ -12,10 +13,10 @@ final class SettingsViewModel {
     var showingRevokeConfirmation = false
 
     func loadSettings() {
-        // Load exempt apps selection
-        if let data = AppGroupManager.shared.getExemptSelectionData(),
+        // Load all-apps selection
+        if let data = AppGroupManager.shared.getAllAppsSelectionData(),
            let selection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data) {
-            activitySelection = selection
+            allAppsSelection = selection
         }
 
         // Check API key status
@@ -25,13 +26,22 @@ final class SettingsViewModel {
         }
     }
 
-    func saveExemptApps() {
-        if let data = try? JSONEncoder().encode(activitySelection) {
-            AppGroupManager.shared.saveExemptSelection(data)
+    func saveUpdatedAppList() {
+        let manager = AppGroupManager.shared
+
+        // Save the updated all-apps selection
+        if let data = try? JSONEncoder().encode(allAppsSelection) {
+            manager.saveAllAppsSelection(data)
         }
-        // Reapply shields with updated exemptions
-        let exemptTokens = BlockingService.shared.getAllExemptTokens()
-        BlockingService.shared.applyShieldAll(exemptTokens: exemptTokens)
+
+        // Rebuild token → name map from updated selection
+        for app in allAppsSelection.applications {
+            guard let name = app.localizedDisplayName, let token = app.token else { continue }
+            manager.saveTokenName(name, for: token)
+        }
+
+        // Reapply shields with existing exempt tokens
+        BlockingService.shared.reapplyFromPersistedData()
     }
 
     func updateAPIKey() async {

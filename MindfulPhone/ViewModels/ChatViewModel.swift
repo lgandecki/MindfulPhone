@@ -54,7 +54,12 @@ final class ChatViewModel {
         self.conversation = convo
 
         // Add initial greeting from assistant
-        let greeting = "You'd like to open **\(request.appName)**. What do you need it for?"
+        let greeting: String
+        if request.appName == "this app" {
+            greeting = "What app are you trying to open, and why do you need it right now?"
+        } else {
+            greeting = "You'd like to open **\(request.appName)**. What do you need it for?"
+        }
         addAssistantMessage(greeting)
 
         // Check network availability
@@ -90,10 +95,26 @@ final class ChatViewModel {
                     unlockHistory: history
                 )
 
+                // Save extracted app name to token→name map
+                if let extractedName = response.extractedAppName,
+                   let request = pendingRequest,
+                   !request.tokenData.isEmpty,
+                   let token = AppGroupManager.shared.decodeToken(from: request.tokenData) {
+                    AppGroupManager.shared.saveTokenName(extractedName, for: token)
+                    if appName == "this app" {
+                        appName = extractedName
+                        conversation?.appName = extractedName
+                    }
+                }
+
                 addAssistantMessage(response.message)
 
-                if response.isApproved, let minutes = response.approvedMinutes {
-                    await handleApproval(minutes: minutes, reason: text)
+                if response.isApproved {
+                    if response.isPermanentExempt {
+                        await handlePermanentExempt()
+                    } else if let minutes = response.approvedMinutes {
+                        await handleApproval(minutes: minutes, reason: text)
+                    }
                 }
             } catch {
                 if (error as NSError).domain == NSURLErrorDomain {
@@ -119,10 +140,63 @@ final class ChatViewModel {
         }
     }
 
+    // MARK: - Permanent Exemption
+
+    private func handlePermanentExempt() async {
+        guard let request = pendingRequest else { return }
+
+        guard !request.tokenData.isEmpty,
+              let token = AppGroupManager.shared.decodeToken(from: request.tokenData) else {
+            errorMessage = "Could not permanently exempt \(appName) — token unavailable."
+            return
+        }
+
+        // Remove from per-app shields
+        BlockingService.shared.temporarilyUnshield(token: token)
+
+        // Add to persisted exempt set
+        var exemptTokens = AppGroupManager.shared.getExemptTokens()
+        exemptTokens.insert(token)
+        AppGroupManager.shared.saveExemptTokens(exemptTokens)
+
+        NSLog("[ChatVM] Permanently exempted %@", appName)
+
+        isApproved = true
+        approvedMinutes = nil // permanent
+
+        conversation?.outcome = "permanent_exempt"
+
+        let record = UnlockRecord(
+            appName: appName,
+            reason: "Permanently exempted",
+            wasApproved: true,
+            wasOffline: false,
+            durationMinutes: 0,
+            conversationID: conversation?.id
+        )
+        modelContext?.insert(record)
+
+        AppGroupManager.shared.clearPendingUnlockRequest()
+        pendingRequest = nil
+    }
+
     // MARK: - Approval Handling
 
     private func handleApproval(minutes: Int, reason: String, isOffline: Bool = false) async {
         guard let request = pendingRequest else { return }
+
+        // Trigger the actual unlock FIRST and check if it succeeded
+        let unlockSucceeded = await UnlockManager.shared.unlockApp(
+            tokenData: request.tokenData,
+            appName: appName,
+            durationMinutes: minutes,
+            reason: reason
+        )
+
+        guard unlockSucceeded else {
+            errorMessage = "Failed to unlock \(appName). The app token could not be decoded."
+            return
+        }
 
         isApproved = true
         approvedMinutes = minutes
@@ -141,14 +215,6 @@ final class ChatViewModel {
             conversationID: conversation?.id
         )
         modelContext?.insert(record)
-
-        // Trigger the actual unlock via UnlockManager
-        await UnlockManager.shared.unlockApp(
-            tokenData: request.tokenData,
-            appName: appName,
-            durationMinutes: minutes,
-            reason: reason
-        )
 
         // Clear the pending request
         AppGroupManager.shared.clearPendingUnlockRequest()

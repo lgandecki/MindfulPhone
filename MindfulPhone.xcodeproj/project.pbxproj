@@ -30,8 +30,16 @@
 		FF9680DE2F3E0C03009F3CFD /* PendingUnlockRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C82F3E0B84009F3CFD /* PendingUnlockRequest.swift */; };
 		FF9680DF2F3E0C03009F3CFD /* ActiveUnlockRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680C92F3E0B84009F3CFD /* ActiveUnlockRecord.swift */; };
 		FF9680E02F3E0C03009F3CFD /* AppGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9680CA2F3E0B91009F3CFD /* AppGroupManager.swift */; };
-		FF9680E22F3E0C04009F3CFD /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9680852F3E0924009F3CFD /* ManagedSettings.framework */; };
 		FF9680E12F3E0C04009F3CFD /* FamilyControls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9680E42F3E0C04009F3CFD /* FamilyControls.framework */; };
+		FF9680E22F3E0C04009F3CFD /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF9680852F3E0924009F3CFD /* ManagedSettings.framework */; };
+		FF9683AC2F3E3195009F3CFD /* KeychainIPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9683AB2F3E3195009F3CFD /* KeychainIPC.swift */; };
+		FF9683AD2F3E3195009F3CFD /* KeychainIPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9683AB2F3E3195009F3CFD /* KeychainIPC.swift */; };
+		FF9683AE2F3E3195009F3CFD /* KeychainIPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9683AB2F3E3195009F3CFD /* KeychainIPC.swift */; };
+		FF9683AF2F3E3195009F3CFD /* KeychainIPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9683AB2F3E3195009F3CFD /* KeychainIPC.swift */; };
+		FF9683B52F3E5439009F3CFD /* AddictiveApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9683B42F3E5439009F3CFD /* AddictiveApps.swift */; };
+		FF9683B62F3E5439009F3CFD /* AddictiveApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9683B42F3E5439009F3CFD /* AddictiveApps.swift */; };
+		FF9683B72F3E5439009F3CFD /* AddictiveApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9683B42F3E5439009F3CFD /* AddictiveApps.swift */; };
+		FF9683B82F3E5439009F3CFD /* AddictiveApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9683B42F3E5439009F3CFD /* AddictiveApps.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,6 +111,8 @@
 		FF9680C92F3E0B84009F3CFD /* ActiveUnlockRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveUnlockRecord.swift; sourceTree = "<group>"; };
 		FF9680CA2F3E0B91009F3CFD /* AppGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupManager.swift; sourceTree = "<group>"; };
 		FF9680E42F3E0C04009F3CFD /* FamilyControls.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FamilyControls.framework; path = System/Library/Frameworks/FamilyControls.framework; sourceTree = SDKROOT; };
+		FF9683AB2F3E3195009F3CFD /* KeychainIPC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainIPC.swift; sourceTree = "<group>"; };
+		FF9683B42F3E5439009F3CFD /* AddictiveApps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddictiveApps.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -279,6 +289,8 @@
 				FF9680C82F3E0B84009F3CFD /* PendingUnlockRequest.swift */,
 				FF9680C92F3E0B84009F3CFD /* ActiveUnlockRecord.swift */,
 				FF9680CA2F3E0B91009F3CFD /* AppGroupManager.swift */,
+				FF9683AB2F3E3195009F3CFD /* KeychainIPC.swift */,
+				FF9683B42F3E5439009F3CFD /* AddictiveApps.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -534,6 +546,8 @@
 				FF9680D22F3E0C00009F3CFD /* PendingUnlockRequest.swift in Sources */,
 				FF9680D32F3E0C00009F3CFD /* ActiveUnlockRecord.swift in Sources */,
 				FF9680D42F3E0C00009F3CFD /* AppGroupManager.swift in Sources */,
+				FF9683B52F3E5439009F3CFD /* AddictiveApps.swift in Sources */,
+				FF9683AE2F3E3195009F3CFD /* KeychainIPC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -555,9 +569,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF9683AF2F3E3195009F3CFD /* KeychainIPC.swift in Sources */,
 				FF9680D52F3E0C01009F3CFD /* AppGroupConstants.swift in Sources */,
 				FF9680D62F3E0C01009F3CFD /* PendingUnlockRequest.swift in Sources */,
 				FF9680D72F3E0C01009F3CFD /* ActiveUnlockRecord.swift in Sources */,
+				FF9683B62F3E5439009F3CFD /* AddictiveApps.swift in Sources */,
 				FF9680D82F3E0C01009F3CFD /* AppGroupManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -566,9 +582,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF9683AD2F3E3195009F3CFD /* KeychainIPC.swift in Sources */,
 				FF9680D92F3E0C02009F3CFD /* AppGroupConstants.swift in Sources */,
 				FF9680DA2F3E0C02009F3CFD /* PendingUnlockRequest.swift in Sources */,
 				FF9680DB2F3E0C02009F3CFD /* ActiveUnlockRecord.swift in Sources */,
+				FF9683B82F3E5439009F3CFD /* AddictiveApps.swift in Sources */,
 				FF9680DC2F3E0C02009F3CFD /* AppGroupManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -577,9 +595,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF9683AC2F3E3195009F3CFD /* KeychainIPC.swift in Sources */,
 				FF9680DD2F3E0C03009F3CFD /* AppGroupConstants.swift in Sources */,
 				FF9680DE2F3E0C03009F3CFD /* PendingUnlockRequest.swift in Sources */,
 				FF9680DF2F3E0C03009F3CFD /* ActiveUnlockRecord.swift in Sources */,
+				FF9683B72F3E5439009F3CFD /* AddictiveApps.swift in Sources */,
 				FF9680E02F3E0C03009F3CFD /* AppGroupManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

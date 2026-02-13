@@ -1,5 +1,6 @@
 import Foundation
 import FamilyControls
+import ManagedSettings
 
 @MainActor
 @Observable
@@ -10,13 +11,15 @@ final class OnboardingViewModel {
     var isTestingKey = false
     var apiKeyError: String?
     var apiKeyValid = false
-    var activitySelection = FamilyActivitySelection()
     var isActivating = false
+
+    // App selection (includeEntireCategory expands category selections into individual app tokens)
+    var allAppsSelection = FamilyActivitySelection(includeEntireCategory: true)
 
     enum OnboardingStep: Int, CaseIterable {
         case welcome
         case authorization
-        case exemptApps
+        case appSelection
         case apiKey
         case activate
 
@@ -24,7 +27,7 @@ final class OnboardingViewModel {
             switch self {
             case .welcome: return "Welcome"
             case .authorization: return "Authorization"
-            case .exemptApps: return "Exempt Apps"
+            case .appSelection: return "App Selection"
             case .apiKey: return "API Key"
             case .activate: return "Activate"
             }
@@ -120,32 +123,32 @@ final class OnboardingViewModel {
     }
     #endif
 
-    // MARK: - Exempt Apps
-
-    func saveExemptApps() {
-        if let data = try? JSONEncoder().encode(activitySelection) {
-            AppGroupManager.shared.saveExemptSelection(data)
-        }
-    }
-
     // MARK: - Activation
 
     func activate() async {
         isActivating = true
 
-        // Request notification permission
         _ = await NotificationService.requestPermission()
 
-        // Save exempt apps
-        saveExemptApps()
+        // Save all-apps selection for later reapply cycles
+        if let data = try? JSONEncoder().encode(allAppsSelection) {
+            AppGroupManager.shared.saveAllAppsSelection(data)
+        }
 
-        // Apply the shield policy
-        let exemptTokens = activitySelection.applicationTokens
-        BlockingService.shared.applyShieldAll(exemptTokens: exemptTokens)
+        // Block ALL selected apps — no exemptions during onboarding.
+        // Users exempt apps organically by tapping "Always Allow" on the shield.
+        let allTokens = allAppsSelection.applicationTokens
+        let exemptTokens = AppGroupManager.shared.getExemptTokens() // empty initially
 
-        // Mark onboarding complete
+        NSLog("[Onboarding] Activating: allTokens=%d exempt=%d block=%d",
+              allTokens.count, exemptTokens.count, allTokens.subtracting(exemptTokens).count)
+
+        BlockingService.shared.applyShields(
+            blockTokens: allTokens.subtracting(exemptTokens),
+            exemptTokens: exemptTokens
+        )
+
         AppGroupManager.shared.isOnboardingComplete = true
-
         isActivating = false
     }
 }

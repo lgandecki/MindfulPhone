@@ -281,7 +281,7 @@ final class AppGroupManager {
         }
     }
 
-    // MARK: - Exempt Apps Selection (File-Based)
+    // MARK: - Exempt Apps Selection (File-Based) — Legacy
 
     private let exemptSelectionFilename = "exemptSelection.dat"
 
@@ -291,6 +291,42 @@ final class AppGroupManager {
 
     func getExemptSelectionData() -> Data? {
         readData(from: exemptSelectionFilename)
+    }
+
+    // MARK: - All Apps Selection (File-Based)
+
+    private let allAppsSelectionFilename = "allAppsSelection.dat"
+
+    func saveAllAppsSelection(_ data: Data) {
+        _ = writeData(data, to: allAppsSelectionFilename)
+    }
+
+    func getAllAppsSelectionData() -> Data? {
+        readData(from: allAppsSelectionFilename)
+    }
+
+    // MARK: - Exempt Tokens (Belt-and-Suspenders: File + UserDefaults)
+
+    private let exemptTokensFilename = "exemptTokens.dat"
+    private let exemptTokensUDKey = "exemptTokensData"
+
+    func saveExemptTokens(_ tokens: Set<ApplicationToken>) {
+        if let data = try? JSONEncoder().encode(tokens) {
+            _ = writeData(data, to: exemptTokensFilename)
+            _ = setSharedData(data, forKey: exemptTokensUDKey)
+        }
+    }
+
+    func getExemptTokens() -> Set<ApplicationToken> {
+        if let data = readData(from: exemptTokensFilename),
+           let tokens = try? JSONDecoder().decode(Set<ApplicationToken>.self, from: data) {
+            return tokens
+        }
+        if let data = getSharedData(forKey: exemptTokensUDKey),
+           let tokens = try? JSONDecoder().decode(Set<ApplicationToken>.self, from: data) {
+            return tokens
+        }
+        return []
     }
 
     // MARK: - Diagnostics

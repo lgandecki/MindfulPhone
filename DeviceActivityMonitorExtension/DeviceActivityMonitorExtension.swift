@@ -16,24 +16,20 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     override func intervalDidEnd(for activity: DeviceActivityName) {
         super.intervalDidEnd(for: activity)
 
-        // Find the matching active unlock record
         let manager = AppGroupManager.shared
         let unlocks = manager.getActiveUnlocks()
 
         if let record = unlocks.first(where: { $0.activityName == activity.rawValue }) {
-            // Re-apply shield for this specific app
+            // Re-add this app's token to per-app shields
             if let token = manager.decodeToken(from: record.tokenData) {
-                reapplyShield(removing: token)
+                reapplyPerAppShield(token: token)
             }
 
-            // Remove the active unlock record
             manager.removeActiveUnlock(activityName: activity.rawValue)
-
-            // Post a notification
             postReblockNotification(appName: record.appName)
         } else {
-            // Safety net: if we can't find the record, reapply full shield
-            reapplyFullShield()
+            // Safety net: reapply all per-app shields from persisted data
+            reapplyAllShields()
         }
     }
 
@@ -48,43 +44,40 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
         }
     }
 
-    // MARK: - Shield Management
+    // MARK: - Shield Management (Per-App Only)
 
-    private func reapplyShield(removing token: ApplicationToken) {
-        // Build exempt set from permanent exemptions + still-active unlocks, minus this token
-        var exemptTokens = getExemptTokens()
-        exemptTokens.remove(token)
-        store.shield.applicationCategories = .all(except: exemptTokens)
-        store.shield.webDomainCategories = .all()
+    private func reapplyPerAppShield(token: ApplicationToken) {
+        if store.shield.applications != nil {
+            store.shield.applications?.insert(token)
+        } else {
+            store.shield.applications = [token]
+        }
     }
 
-    private func reapplyFullShield() {
-        let exemptTokens = getExemptTokens()
-        store.shield.applicationCategories = .all(except: exemptTokens)
-        store.shield.webDomainCategories = .all()
-    }
-
-    private func getExemptTokens() -> Set<ApplicationToken> {
-        var tokens = Set<ApplicationToken>()
+    /// Safety net: rebuild all per-app shields from persisted data.
+    private func reapplyAllShields() {
         let manager = AppGroupManager.shared
 
-        // Permanent exemptions
-        if let selectionData = manager.getExemptSelectionData(),
-           let selection = try? JSONDecoder().decode(
-               FamilyActivitySelection.self, from: selectionData
-           ) {
-            tokens.formUnion(selection.applicationTokens)
+        guard let data = manager.getAllAppsSelectionData(),
+              let selection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data) else {
+            return
         }
 
-        // Still-active temporary unlocks (not yet expired)
-        let activeUnlocks = manager.getActiveUnlocks()
-        for unlock in activeUnlocks where unlock.expiresAt > Date() {
+        let allTokens = selection.applicationTokens
+        let exemptTokens = manager.getExemptTokens()
+
+        // Subtract exempt + still-active unlocks
+        var activeTokens = Set<ApplicationToken>()
+        for unlock in manager.getActiveUnlocks() where unlock.expiresAt > Date() {
             if let token = manager.decodeToken(from: unlock.tokenData) {
-                tokens.insert(token)
+                activeTokens.insert(token)
             }
         }
 
-        return tokens
+        let blockTokens = allTokens.subtracting(exemptTokens).subtracting(activeTokens)
+        store.shield.applications = blockTokens.isEmpty ? nil : blockTokens
+        store.shield.applicationCategories = nil
+        store.shield.webDomainCategories = nil
     }
 
     // MARK: - Notifications

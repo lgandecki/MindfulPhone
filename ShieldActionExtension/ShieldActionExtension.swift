@@ -11,12 +11,7 @@ class ShieldActionExtension: ShieldActionDelegate {
     ) {
         switch action {
         case .primaryButtonPressed:
-            NSLog("[ShieldAction] primaryButtonPressed")
-            AppGroupManager.shared.appendExtensionLog(
-                source: "ShieldAction",
-                message: "primaryButtonPressed",
-                persistToSharedFile: false
-            )
+            NSLog("[ShieldAction] primaryButtonPressed — request access flow")
             handleRequestAccess(
                 for: application,
                 trigger: "primaryButtonPressed",
@@ -24,74 +19,38 @@ class ShieldActionExtension: ShieldActionDelegate {
             )
 
         case .secondaryButtonPressed:
-            NSLog("[ShieldAction] secondaryButtonPressed")
-            AppGroupManager.shared.appendExtensionLog(
-                source: "ShieldAction",
-                message: "secondaryButtonPressed (routing to request flow)",
-                persistToSharedFile: false
-            )
-            handleRequestAccess(
+            NSLog("[ShieldAction] secondaryButtonPressed — permanent exempt")
+            handlePermanentExempt(
                 for: application,
-                trigger: "secondaryButtonPressed",
                 completionHandler: completionHandler
             )
+
         @unknown default:
-            NSLog("[ShieldAction] unknownAction")
-            AppGroupManager.shared.appendExtensionLog(
-                source: "ShieldAction",
-                message: "unknownAction",
-                persistToSharedFile: false
-            )
             completionHandler(.close)
         }
     }
 
-    override func handle(
-        action: ShieldAction,
-        for webDomain: WebDomainToken,
-        completionHandler: @escaping (ShieldActionResponse) -> Void
-    ) {
-        switch action {
-        case .primaryButtonPressed:
-            NSLog("[ShieldAction] webDomain primaryButtonPressed")
-            handleRequestAccessWithoutToken(
-                trigger: "webDomain.primaryButtonPressed",
-                completionHandler: completionHandler
-            )
-        case .secondaryButtonPressed:
-            NSLog("[ShieldAction] webDomain secondaryButtonPressed")
-            handleRequestAccessWithoutToken(
-                trigger: "webDomain.secondaryButtonPressed",
-                completionHandler: completionHandler
-            )
-        @unknown default:
-            NSLog("[ShieldAction] webDomain unknownAction")
-            completionHandler(.close)
-        }
-    }
+    // MARK: - Permanent Exempt (Secondary Button = "Always Allow")
 
-    override func handle(
-        action: ShieldAction,
-        for category: ActivityCategoryToken,
+    private func handlePermanentExempt(
+        for token: ApplicationToken,
         completionHandler: @escaping (ShieldActionResponse) -> Void
     ) {
-        switch action {
-        case .primaryButtonPressed:
-            NSLog("[ShieldAction] category primaryButtonPressed")
-            handleRequestAccessWithoutToken(
-                trigger: "category.primaryButtonPressed",
-                completionHandler: completionHandler
-            )
-        case .secondaryButtonPressed:
-            NSLog("[ShieldAction] category secondaryButtonPressed")
-            handleRequestAccessWithoutToken(
-                trigger: "category.secondaryButtonPressed",
-                completionHandler: completionHandler
-            )
-        @unknown default:
-            NSLog("[ShieldAction] category unknownAction")
-            completionHandler(.close)
-        }
+        let manager = AppGroupManager.shared
+
+        // 1. Remove this app from per-app shields
+        let store = ManagedSettingsStore()
+        store.shield.applications?.remove(token)
+        NSLog("[ShieldAction] Removed token from shield.applications")
+
+        // 2. Persist the exemption so it survives reapply cycles
+        var exemptTokens = manager.getExemptTokens()
+        exemptTokens.insert(token)
+        manager.saveExemptTokens(exemptTokens)
+        NSLog("[ShieldAction] Saved token to exempt set (count=%d)", exemptTokens.count)
+
+        // 3. Close the shield — app opens immediately
+        completionHandler(.close)
     }
 
     // MARK: - Request Access Flow
@@ -103,9 +62,8 @@ class ShieldActionExtension: ShieldActionDelegate {
     ) {
         let manager = AppGroupManager.shared
 
-        let appName = "this app"
-
         let tokenData = manager.encodeToken(token)
+        let appName = manager.getTokenName(for: token) ?? "this app"
         let requestPayload = PendingUnlockRequest(tokenData: tokenData, appName: appName)
 
         // Complete only after scheduling returns (or timeout). If we complete too early,
@@ -151,7 +109,9 @@ class ShieldActionExtension: ShieldActionDelegate {
     ) {
         let content = UNMutableNotificationContent()
         content.title = "MindfulPhone"
-        content.body = "Tap to explain why you need \(appName)"
+        content.body = appName == "this app"
+            ? "Tap to explain why you need this app"
+            : "Tap to explain why you need \(appName)"
         content.sound = .default
         content.categoryIdentifier = "UNLOCK_REQUEST"
         content.userInfo = [
@@ -172,39 +132,4 @@ class ShieldActionExtension: ShieldActionDelegate {
         }
     }
 
-    private func handleRequestAccessWithoutToken(
-        trigger: String,
-        completionHandler: @escaping (ShieldActionResponse) -> Void
-    ) {
-        let manager = AppGroupManager.shared
-        let requestPayload = PendingUnlockRequest(tokenData: Data(), appName: "this app")
-
-        let completionLock = NSLock()
-        var didComplete = false
-        func completeOnce(_ response: ShieldActionResponse) {
-            completionLock.lock()
-            defer { completionLock.unlock() }
-            guard !didComplete else { return }
-            didComplete = true
-            completionHandler(response)
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            NSLog("[ShieldAction] no-token completion timeout fallback")
-            completeOnce(.defer)
-        }
-
-        postNotification(for: requestPayload, appName: "this app") { error in
-            NSLog("[ShieldAction] notificationScheduled no-token trigger=%@ success=%@ error=%@",
-                  trigger,
-                  error == nil ? "YES" : "NO",
-                  error?.localizedDescription ?? "(none)")
-            manager.appendExtensionLog(
-                source: "ShieldAction",
-                message: "notificationScheduled no-token trigger=\(trigger) success=\(error == nil) error=\(error?.localizedDescription ?? "(none)")",
-                persistToSharedFile: false
-            )
-            completeOnce(.defer)
-        }
-    }
 }
