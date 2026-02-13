@@ -1,0 +1,11 @@
+name = "mindfulphone-claude-proxy"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 30
+  period = 60

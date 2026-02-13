@@ -1,0 +1,13 @@
+node_modules
+dist
+out
+
+# Cloudflare
+.dev.vars
+.wrangler/
+
+# Legacy
+.env
+
+# OS
+.DS_Store

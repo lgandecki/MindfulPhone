@@ -14,17 +14,9 @@ xcuserdata/
 # Claude Code
 .claude/
 
-# CocoaPods
+# CocoaPods (if used later)
 Pods/
 
-# Secrets — NEVER commit these
+# Secrets
 *.env
 Secrets.xcconfig
-
-# Node / Bun
-node_modules/
-bun.lock
-
-# Generated assets (re-generate with bun scripts)
-generate-assets/output/
-generate-assets/output copy/
