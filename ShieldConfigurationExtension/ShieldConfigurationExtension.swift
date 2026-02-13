@@ -23,8 +23,8 @@ class ShieldConfigurationExtension: ShieldConfigurationDataSource {
         }
 
         return ShieldConfiguration(
-            backgroundBlurStyle: .systemUltraThinMaterial,
-            backgroundColor: UIColor.systemBackground.withAlphaComponent(0.3),
+            backgroundBlurStyle: nil,
+            backgroundColor: .systemBackground,
             icon: UIImage(systemName: "brain.head.profile"),
             title: ShieldConfiguration.Label(
                 text: "\(appName) is blocked",
