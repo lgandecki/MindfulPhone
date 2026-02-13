@@ -31,44 +31,6 @@ struct SettingsView: View {
                 Text("Add newly installed apps to MindfulPhone's managed list.")
             }
 
-            // MARK: - API Key
-            Section {
-                HStack {
-                    Label("API Key", systemImage: "key.fill")
-                    Spacer()
-                    if viewModel.apiKeyValid {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
-                    }
-                }
-
-                SecureField("sk-ant-...", text: $viewModel.apiKey)
-                    .textContentType(.password)
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
-
-                if let error = viewModel.apiKeyError {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                }
-
-                Button {
-                    Task { await viewModel.updateAPIKey() }
-                } label: {
-                    if viewModel.isTestingKey {
-                        ProgressView()
-                    } else {
-                        Text("Update & Test Key")
-                    }
-                }
-                .disabled(viewModel.apiKey.isEmpty || viewModel.isTestingKey)
-            } header: {
-                Text("Claude API")
-            } footer: {
-                Text("Your key is stored securely in the iOS Keychain.")
-            }
-
             // MARK: - Active Unlocks
             Section("Active Unlocks") {
                 let active = UnlockManager.shared.getActiveUnlocks()

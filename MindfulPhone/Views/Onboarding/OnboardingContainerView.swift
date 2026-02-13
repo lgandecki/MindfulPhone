@@ -28,9 +28,6 @@ struct OnboardingContainerView: View {
                 AppSelectionStepView(viewModel: viewModel)
                     .tag(OnboardingViewModel.OnboardingStep.appSelection)
 
-                APIKeyStepView(viewModel: viewModel)
-                    .tag(OnboardingViewModel.OnboardingStep.apiKey)
-
                 ActivateStepView(viewModel: viewModel, onComplete: onComplete)
                     .tag(OnboardingViewModel.OnboardingStep.activate)
             }

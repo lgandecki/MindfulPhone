@@ -7,10 +7,6 @@ import ManagedSettings
 final class OnboardingViewModel {
     var currentStep: OnboardingStep = .welcome
     var isAuthorized = false
-    var apiKey = ""
-    var isTestingKey = false
-    var apiKeyError: String?
-    var apiKeyValid = false
     var isActivating = false
 
     // App selection (includeEntireCategory expands category selections into individual app tokens)
@@ -20,15 +16,13 @@ final class OnboardingViewModel {
         case welcome
         case authorization
         case appSelection
-        case apiKey
         case activate
 
         var title: String {
             switch self {
             case .welcome: return "Welcome"
             case .authorization: return "Authorization"
-            case .appSelection: return "App Selection"
-            case .apiKey: return "API Key"
+            case .appSelection: return "Block Apps"
             case .activate: return "Activate"
             }
         }
@@ -65,64 +59,6 @@ final class OnboardingViewModel {
         }
     }
 
-    // MARK: - API Key
-
-    func testAPIKey() async {
-        let key = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !key.isEmpty else {
-            apiKeyError = "Please enter an API key."
-            return
-        }
-
-        isTestingKey = true
-        apiKeyError = nil
-
-        do {
-            try KeychainService.saveAPIKey(key)
-
-            // Test with a simple request
-            let response = try await ClaudeAPIService.shared.sendMessage(
-                conversationMessages: [(role: "user", content: "Say 'connected' in one word.")],
-                appName: "Test",
-                unlockHistory: []
-            )
-
-            if !response.message.isEmpty {
-                apiKeyValid = true
-            }
-        } catch {
-            apiKeyError = error.localizedDescription
-            apiKeyValid = false
-            KeychainService.deleteAPIKey()
-        }
-
-        isTestingKey = false
-    }
-
-    #if DEBUG
-    func testProxyConnection() async {
-        isTestingKey = true
-        apiKeyError = nil
-
-        do {
-            let response = try await ClaudeAPIService.shared.sendMessage(
-                conversationMessages: [(role: "user", content: "Say 'connected' in one word.")],
-                appName: "Test",
-                unlockHistory: []
-            )
-
-            if !response.message.isEmpty {
-                apiKeyValid = true
-            }
-        } catch {
-            apiKeyError = "Proxy unreachable: \(error.localizedDescription)"
-            apiKeyValid = false
-        }
-
-        isTestingKey = false
-    }
-    #endif
-
     // MARK: - Activation
 
     func activate() async {
@@ -135,12 +71,10 @@ final class OnboardingViewModel {
             AppGroupManager.shared.saveAllAppsSelection(data)
         }
 
-        // Block ALL selected apps — no exemptions during onboarding.
-        // Users exempt apps organically by tapping "Always Allow" on the shield.
         let allTokens = allAppsSelection.applicationTokens
-        let exemptTokens = AppGroupManager.shared.getExemptTokens() // empty initially
+        let exemptTokens = AppGroupManager.shared.getExemptTokens()
 
-        NSLog("[Onboarding] Activating: allTokens=%d exempt=%d block=%d",
+        NSLog("[Onboarding] Activating: selected=%d exempt=%d blocking=%d",
               allTokens.count, exemptTokens.count, allTokens.subtracting(exemptTokens).count)
 
         BlockingService.shared.applyShields(

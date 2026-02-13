@@ -97,6 +97,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AA0000012F4A000000000001 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		FF9680532F3E08F5009F3CFD /* MindfulPhone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MindfulPhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF9680622F3E08F6009F3CFD /* MindfulPhoneTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MindfulPhoneTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF96806C2F3E08F6009F3CFD /* MindfulPhoneUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MindfulPhoneUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -246,6 +247,7 @@
 		FF96804A2F3E08F5009F3CFD = {
 			isa = PBXGroup;
 			children = (
+				AA0000012F4A000000000001 /* Secrets.xcconfig */,
 				FF9680552F3E08F5009F3CFD /* MindfulPhone */,
 				FF9680652F3E08F6009F3CFD /* MindfulPhoneTests */,
 				FF96806F2F3E08F6009F3CFD /* MindfulPhoneUITests */,
@@ -637,6 +639,7 @@
 /* Begin XCBuildConfiguration section */
 		FF9680742F3E08F6009F3CFD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA0000012F4A000000000001 /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -701,6 +704,7 @@
 		};
 		FF9680752F3E08F6009F3CFD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA0000012F4A000000000001 /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

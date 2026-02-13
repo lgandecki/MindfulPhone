@@ -6,10 +6,6 @@ import ManagedSettings
 @Observable
 final class SettingsViewModel {
     var allAppsSelection = FamilyActivitySelection(includeEntireCategory: true)
-    var apiKey = ""
-    var isTestingKey = false
-    var apiKeyError: String?
-    var apiKeyValid = false
     var showingRevokeConfirmation = false
 
     func loadSettings() {
@@ -17,12 +13,6 @@ final class SettingsViewModel {
         if let data = AppGroupManager.shared.getAllAppsSelectionData(),
            let selection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data) {
             allAppsSelection = selection
-        }
-
-        // Check API key status
-        apiKeyValid = KeychainService.hasAPIKey
-        if apiKeyValid {
-            apiKey = "••••••••••••"
         }
     }
 
@@ -42,32 +32,6 @@ final class SettingsViewModel {
 
         // Reapply shields with existing exempt tokens
         BlockingService.shared.reapplyFromPersistedData()
-    }
-
-    func updateAPIKey() async {
-        let key = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !key.isEmpty, !key.hasPrefix("•") else { return }
-
-        isTestingKey = true
-        apiKeyError = nil
-
-        do {
-            try KeychainService.saveAPIKey(key)
-            let response = try await ClaudeAPIService.shared.sendMessage(
-                conversationMessages: [(role: "user", content: "Say 'connected' in one word.")],
-                appName: "Test",
-                unlockHistory: []
-            )
-            apiKeyValid = !response.message.isEmpty
-            if apiKeyValid {
-                apiKey = "••••••••••••"
-            }
-        } catch {
-            apiKeyError = error.localizedDescription
-            apiKeyValid = false
-        }
-
-        isTestingKey = false
     }
 
     func revokeAuthorization() {

@@ -5,23 +5,14 @@ struct AppSelectionStepView: View {
     @Bindable var viewModel: OnboardingViewModel
     @State private var showingPicker = false
 
-    private var hasSelection: Bool {
-        !viewModel.allAppsSelection.applicationTokens.isEmpty
-            || !viewModel.allAppsSelection.categoryTokens.isEmpty
+    private static let appLimit = 50
+
+    private var appCount: Int {
+        viewModel.allAppsSelection.applicationTokens.count
     }
 
-    private var selectionSummary: String {
-        let apps = viewModel.allAppsSelection.applicationTokens.count
-        let cats = viewModel.allAppsSelection.categoryTokens.count
-        if apps > 0 && cats > 0 {
-            return "\(apps) apps + \(cats) categories selected"
-        } else if apps > 0 {
-            return "\(apps) app\(apps == 1 ? "" : "s") selected"
-        } else if cats > 0 {
-            return "\(cats) categor\(cats == 1 ? "y" : "ies") selected (includes all apps)"
-        }
-        return ""
-    }
+    private var hasSelection: Bool { appCount > 0 }
+    private var overLimit: Bool { appCount > Self.appLimit }
 
     var body: some View {
         VStack(spacing: 32) {
@@ -32,11 +23,11 @@ struct AppSelectionStepView: View {
                 .foregroundStyle(.blue)
 
             VStack(spacing: 12) {
-                Text("Select Your Apps")
+                Text("Block Distracting Apps")
                     .font(.title)
                     .fontWeight(.bold)
 
-                Text("Tap the button below, then tap **Select All** at the top. This tells MindfulPhone which apps to manage.")
+                Text("Choose the apps you find most distracting. MindfulPhone will ask you to reflect before opening them.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -44,15 +35,23 @@ struct AppSelectionStepView: View {
             .padding(.horizontal)
 
             if hasSelection {
-                Text(selectionSummary)
+                Text("\(appCount) app\(appCount == 1 ? "" : "s") selected")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(overLimit ? .red : .secondary)
+            }
+
+            if overLimit {
+                Text("iOS limits blocking to \(Self.appLimit) apps. Please reduce your selection.")
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
             }
 
             Button {
                 showingPicker = true
             } label: {
-                Label("Choose Apps", systemImage: "plus.circle")
+                Label(hasSelection ? "Edit Selection" : "Choose Apps", systemImage: hasSelection ? "pencil.circle" : "plus.circle")
                     .font(.headline)
             }
             .familyActivityPicker(
@@ -71,7 +70,7 @@ struct AppSelectionStepView: View {
                     .padding(.vertical, 14)
             }
             .buttonStyle(.borderedProminent)
-            .disabled(!hasSelection)
+            .disabled(!hasSelection || overLimit)
             .padding(.horizontal, 24)
         }
         .padding(24)

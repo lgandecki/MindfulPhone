@@ -12,16 +12,17 @@ struct ClaudeResponse {
 final class ClaudeAPIService {
     static let shared = ClaudeAPIService()
 
-    #if DEBUG
-    // Local proxy on your Mac — update this IP if your Mac's address changes.
-    // Run: cd claude-proxy && bun index.ts
-    private static let proxyHost = "192.168.1.26"
-    private let useProxy = true
-    private let endpoint = URL(string: "http://\(proxyHost):3141/v1/messages")!
-    #else
-    private let useProxy = false
-    private let endpoint = URL(string: "https://api.anthropic.com/v1/messages")!
-    #endif
+    private let endpoint = URL(string: "https://mindfulphone-claude-proxy.gozdak.workers.dev/v1/messages")!
+
+    /// Shared secret injected via Secrets.xcconfig → Info.plist at build time.
+    private let appSecret: String = {
+        guard let secret = Bundle.main.infoDictionary?["AppSharedSecret"] as? String,
+              !secret.isEmpty,
+              !secret.contains("$") else {
+            fatalError("APP_SHARED_SECRET not set. Copy Secrets.xcconfig.example → Secrets.xcconfig and fill in your secret.")
+        }
+        return secret
+    }()
 
     private init() {}
 
@@ -44,11 +45,6 @@ final class ClaudeAPIService {
         appName: String,
         unlockHistory: [UnlockHistorySummary]
     ) async throws -> ClaudeResponse {
-        let apiKey: String? = useProxy ? nil : KeychainService.getAPIKey()
-        if !useProxy && apiKey == nil {
-            throw ClaudeAPIError.noAPIKey
-        }
-
         let systemPrompt = buildSystemPrompt(appName: appName, unlockHistory: unlockHistory)
 
         let messages = conversationMessages.map { msg in
@@ -66,9 +62,7 @@ final class ClaudeAPIService {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "content-type")
         request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
-        if let apiKey {
-            request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
-        }
+        request.setValue("Bearer \(appSecret)", forHTTPHeaderField: "Authorization")
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         request.timeoutInterval = 30
 
@@ -205,7 +199,6 @@ struct UnlockHistorySummary {
 }
 
 enum ClaudeAPIError: LocalizedError {
-    case noAPIKey
     case invalidResponse
     case apiError(statusCode: Int, message: String)
     case parseError
@@ -213,13 +206,14 @@ enum ClaudeAPIError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .noAPIKey:
-            return "No API key configured. Please add your Claude API key in Settings."
         case .invalidResponse:
             return "Received an invalid response from the server."
         case .apiError(let code, let message):
             if code == 401 {
-                return "Invalid API key. Please check your key in Settings."
+                return "Authentication failed. The app may need updating."
+            }
+            if code == 429 {
+                return "Too many requests. Please wait a moment and try again."
             }
             return "API error (\(code)): \(message)"
         case .parseError:

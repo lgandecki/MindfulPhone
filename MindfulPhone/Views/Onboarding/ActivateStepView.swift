@@ -18,7 +18,7 @@ struct ActivateStepView: View {
                     .font(.title)
                     .fontWeight(.bold)
 
-                Text("Once activated, all selected apps will be blocked. You can quickly exempt essentials (Phone, Maps, etc.) by tapping \"Always Allow\" on the shield screen.")
+                Text("Once activated, your selected apps will be blocked. To open one, you'll have a quick conversation with Claude AI about why you need it.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -31,13 +31,8 @@ struct ActivateStepView: View {
                     isDone: viewModel.isAuthorized
                 )
                 ChecklistRow(
-                    text: "Apps selected",
+                    text: "Distracting apps selected",
                     isDone: !viewModel.allAppsSelection.applicationTokens.isEmpty
-                        || !viewModel.allAppsSelection.categoryTokens.isEmpty
-                )
-                ChecklistRow(
-                    text: "Claude API key configured",
-                    isDone: viewModel.apiKeyValid
                 )
             }
 
