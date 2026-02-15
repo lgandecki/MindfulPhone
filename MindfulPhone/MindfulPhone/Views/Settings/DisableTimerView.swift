@@ -9,16 +9,20 @@ struct DisableTimerView: View {
 
             Image(systemName: "exclamationmark.shield")
                 .font(.system(size: 64))
-                .foregroundStyle(.red)
+                .foregroundStyle(.red.opacity(0.8))
+                .frame(width: 100, height: 100)
+                .background(Color.red.opacity(0.08))
+                .clipShape(RoundedRectangle(cornerRadius: 24))
 
             VStack(spacing: 12) {
                 Text("Disabling Protection")
                     .font(.title)
                     .fontWeight(.bold)
+                    .foregroundStyle(Color.brandDeepPlum)
 
                 Text("You must wait before disabling. If you leave this screen, the timer resets.")
                     .font(.body)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.brandSoftPlum.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
@@ -26,12 +30,12 @@ struct DisableTimerView: View {
             // Countdown
             Text(formattedTime)
                 .font(.system(size: 72, weight: .light, design: .monospaced))
-                .foregroundStyle(viewModel.disableTimerCompleted ? .red : .primary)
+                .foregroundStyle(viewModel.disableTimerCompleted ? .red : Color.brandDeepPlum)
 
             if viewModel.disableTimerCompleted {
                 Text("Your accountability partner has been notified.")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.brandSoftPlum.opacity(0.6))
             }
 
             Spacer()
@@ -44,7 +48,7 @@ struct DisableTimerView: View {
                         Text("Confirm Disable")
                             .font(.headline)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
+                            .padding(.vertical, 16)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.red)
@@ -54,15 +58,13 @@ struct DisableTimerView: View {
                     viewModel.cancelDisableTimer()
                 } label: {
                     Text("Cancel")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(BrandSecondaryButtonStyle())
             }
             .padding(.horizontal, 24)
         }
         .padding(24)
+        .background(Color.brandWarmCream.ignoresSafeArea())
         .interactiveDismissDisabled()
     }
 

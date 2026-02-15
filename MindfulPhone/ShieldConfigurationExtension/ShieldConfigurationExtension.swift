@@ -39,7 +39,7 @@ class ShieldConfigurationExtension: ShieldConfigurationDataSource {
                 color: brandDeepPlum
             ),
             subtitle: ShieldConfiguration.Label(
-                text: "Take a moment to reflect on whether you need \(appName) right now.",
+                text: "Take a moment to reflect on whether you need this app right now.",
                 color: brandSoftPlum
             ),
             primaryButtonLabel: ShieldConfiguration.Label(

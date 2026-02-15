@@ -23,6 +23,8 @@ struct HistoryListView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.brandWarmCream)
         .navigationTitle("History")
     }
 }
@@ -36,36 +38,37 @@ private struct HistoryRowView: View {
         HStack(spacing: 12) {
             // Status icon
             Image(systemName: record.wasApproved ? "checkmark.circle.fill" : "xmark.circle.fill")
-                .foregroundStyle(record.wasApproved ? .green : .red)
+                .foregroundStyle(record.wasApproved ? Color.brandSoftPlum : .red.opacity(0.7))
                 .font(.title3)
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(record.appName)
                         .font(.headline)
+                        .foregroundStyle(Color.brandDeepPlum)
                     if record.wasOffline {
                         Text("Offline")
                             .font(.caption2)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(.orange.opacity(0.2), in: Capsule())
-                            .foregroundStyle(.orange)
+                            .background(Color.brandGoldenGlow.opacity(0.25), in: Capsule())
+                            .foregroundStyle(Color.brandGoldenGlow)
                     }
                 }
 
                 Text(record.reason)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.brandSoftPlum.opacity(0.6))
                     .lineLimit(1)
 
                 HStack(spacing: 8) {
                     Text(record.requestedAt, style: .relative)
                         .font(.caption)
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(Color.brandLavender)
                     if let minutes = record.durationMinutes, record.wasApproved {
                         Text("\(minutes) min")
                             .font(.caption)
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(Color.brandLavender)
                     }
                 }
             }
@@ -92,6 +95,7 @@ private struct HistoryDetailView: View {
 
             Section("Reason") {
                 Text(record.reason)
+                    .foregroundStyle(Color.brandDeepPlum)
             }
 
             if record.wasApproved {
@@ -108,6 +112,8 @@ private struct HistoryDetailView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.brandWarmCream)
         .navigationTitle(record.appName)
     }
 }

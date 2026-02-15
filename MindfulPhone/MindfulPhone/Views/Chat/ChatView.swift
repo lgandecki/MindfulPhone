@@ -38,6 +38,7 @@ struct ChatView: View {
                     .padding(.horizontal, 16)
                     .padding(.top, 12)
                 }
+                .background(Color.brandWarmCream.opacity(0.5))
                 .onChange(of: viewModel.messages.count) {
                     withAnimation {
                         proxy.scrollTo("bottom", anchor: .bottom)
@@ -73,22 +74,23 @@ struct ChatView: View {
             if !viewModel.appName.isEmpty {
                 Text("Unlock Request")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.brandSoftPlum.opacity(0.7))
                 Text(viewModel.appName)
                     .font(.title2)
                     .fontWeight(.semibold)
+                    .foregroundStyle(Color.brandDeepPlum)
             }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
-        .background(.ultraThinMaterial)
+        .background(Color.brandWarmCream.opacity(0.95))
     }
 
     private var typingIndicator: some View {
         HStack(spacing: 4) {
             ForEach(0..<3, id: \.self) { index in
                 Circle()
-                    .fill(.secondary)
+                    .fill(Color.brandLavender)
                     .frame(width: 8, height: 8)
                     .opacity(0.4)
                     .animation(
@@ -101,7 +103,7 @@ struct ChatView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+        .background(Color.brandLavender.opacity(0.12), in: RoundedRectangle(cornerRadius: 16))
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -109,18 +111,23 @@ struct ChatView: View {
         VStack(spacing: 8) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 40))
-                .foregroundStyle(.green)
+                .foregroundStyle(Color.brandSoftPlum)
 
             Text("Unlocked for \(viewModel.approvedMinutes ?? 0) minutes")
                 .font(.headline)
+                .foregroundStyle(Color.brandDeepPlum)
 
             Text("Switch to \(viewModel.appName) to use it now.")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.brandSoftPlum.opacity(0.7))
         }
         .frame(maxWidth: .infinity)
         .padding(20)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
+        .background(Color.brandLavender.opacity(0.15), in: RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.brandLavender.opacity(0.3), lineWidth: 1)
+        )
     }
 
     private func errorBanner(_ message: String) -> some View {
@@ -129,6 +136,6 @@ struct ChatView: View {
             .foregroundStyle(.red)
             .padding(12)
             .frame(maxWidth: .infinity)
-            .background(.red.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+            .background(.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
     }
 }

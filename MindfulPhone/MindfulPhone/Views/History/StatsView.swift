@@ -39,14 +39,15 @@ struct StatsView: View {
                 let apps = topApps(in: allRecords)
                 if apps.isEmpty {
                     Text("No data yet")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.brandSoftPlum.opacity(0.5))
                 } else {
                     ForEach(apps, id: \.name) { app in
                         HStack {
                             Text(app.name)
+                                .foregroundStyle(Color.brandDeepPlum)
                             Spacer()
                             Text("\(app.count) requests")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.brandSoftPlum.opacity(0.6))
                         }
                     }
                 }
@@ -57,20 +58,21 @@ struct StatsView: View {
                     let active = UnlockManager.shared.getActiveUnlocks()
                     if active.isEmpty {
                         Text("No active unlocks")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.brandSoftPlum.opacity(0.5))
                     } else {
                         ForEach(active) { unlock in
                             HStack {
                                 Text(unlock.appName)
                                     .font(.headline)
+                                    .foregroundStyle(Color.brandDeepPlum)
                                 Spacer()
                                 VStack(alignment: .trailing) {
                                     Text("Expires")
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(Color.brandSoftPlum.opacity(0.5))
                                     Text(unlock.expiresAt, style: .relative)
                                         .font(.caption)
-                                        .foregroundStyle(.orange)
+                                        .foregroundStyle(Color.brandGoldenGlow)
                                 }
                             }
                         }
@@ -78,6 +80,8 @@ struct StatsView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.brandWarmCream)
         .navigationTitle("Stats")
     }
 
@@ -125,10 +129,11 @@ private struct StatRow: View {
     var body: some View {
         HStack {
             Text(label)
+                .foregroundStyle(Color.brandDeepPlum)
             Spacer()
             Text(value)
                 .fontWeight(.medium)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.brandSoftPlum)
         }
     }
 }

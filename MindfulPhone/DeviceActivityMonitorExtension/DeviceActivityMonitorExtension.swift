@@ -4,62 +4,62 @@ import ManagedSettings
 import UserNotifications
 
 /// Runs in a separate process. Handles re-blocking apps when their unlock timer expires.
+///
+/// Also serves as a backup re-block mechanism. The PRIMARY re-block runs from
+/// the main app process (in-app timer in UnlockManager), which reliably writes
+/// to ManagedSettingsStore. This extension callback is a second line of defense.
 class DeviceActivityMonitorExtension: DeviceActivityMonitor {
-
-    private let store = ManagedSettingsStore()
-
-    override func intervalDidStart(for activity: DeviceActivityName) {
-        super.intervalDidStart(for: activity)
-        // Nothing to do when the interval starts — the app is already unshielded
-    }
 
     override func intervalDidEnd(for activity: DeviceActivityName) {
         super.intervalDidEnd(for: activity)
 
+        NSLog("[DAMonitor] intervalDidEnd for activity=%@", activity.rawValue)
+
         let manager = AppGroupManager.shared
+
+        // Check if the in-app timer already handled this (record would be gone)
         let unlocks = manager.getActiveUnlocks()
-
-        if let record = unlocks.first(where: { $0.activityName == activity.rawValue }) {
-            // Re-add this app's token to per-app shields
-            if let token = manager.decodeToken(from: record.tokenData) {
-                reapplyPerAppShield(token: token)
-            }
-
-            manager.removeActiveUnlock(activityName: activity.rawValue)
-            postReblockNotification(appName: record.appName)
-        } else {
-            // Safety net: reapply all per-app shields from persisted data
-            reapplyAllShields()
+        guard let record = unlocks.first(where: { $0.activityName == activity.rawValue }) else {
+            NSLog("[DAMonitor] Record already cleaned up (in-app timer handled it)")
+            return
         }
+
+        NSLog("[DAMonitor] In-app timer didn't fire — extension handling reblock for %@",
+              record.appName)
+
+        // Remove record first so the full rebuild includes this app
+        manager.removeActiveUnlock(activityName: activity.rawValue)
+
+        // Create a FRESH store instance for each callback — don't use a stored
+        // property which may hold stale state from the extension process lifecycle.
+        let store = ManagedSettingsStore()
+
+        // Log current state for debugging
+        let beforeCount = store.shield.applications?.count ?? -1
+        NSLog("[DAMonitor] Shield count BEFORE reapply: %d", beforeCount)
+
+        // Full rebuild from persisted data
+        reapplyAllShields(store: store, manager: manager)
+
+        let afterCount = store.shield.applications?.count ?? -1
+        NSLog("[DAMonitor] Shield count AFTER reapply: %d", afterCount)
+
+        postReblockNotification(appName: record.appName)
     }
 
     override func intervalWillEndWarning(for activity: DeviceActivityName) {
         super.intervalWillEndWarning(for: activity)
-
-        let manager = AppGroupManager.shared
-        let unlocks = manager.getActiveUnlocks()
-
-        if let record = unlocks.first(where: { $0.activityName == activity.rawValue }) {
-            postWarningNotification(appName: record.appName)
-        }
+        // Warning notifications are handled by NotificationService.scheduleExpiryWarning
+        // (timer-based from the main app process).
     }
 
-    // MARK: - Shield Management (Per-App Only)
+    // MARK: - Shield Management
 
-    private func reapplyPerAppShield(token: ApplicationToken) {
-        if store.shield.applications != nil {
-            store.shield.applications?.insert(token)
-        } else {
-            store.shield.applications = [token]
-        }
-    }
-
-    /// Safety net: rebuild all per-app shields from persisted data.
-    private func reapplyAllShields() {
-        let manager = AppGroupManager.shared
-
+    /// Rebuild all per-app shields from persisted data using the provided store instance.
+    private func reapplyAllShields(store: ManagedSettingsStore, manager: AppGroupManager) {
         guard let data = manager.getAllAppsSelectionData(),
               let selection = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data) else {
+            NSLog("[DAMonitor] reapplyAllShields: FAILED to read persisted selection data")
             return
         }
 
@@ -75,26 +75,15 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
         }
 
         let blockTokens = allTokens.subtracting(exemptTokens).subtracting(activeTokens)
+
+        NSLog("[DAMonitor] reapplyAllShields: all=%d exempt=%d active=%d → blocking=%d",
+              allTokens.count, exemptTokens.count, activeTokens.count, blockTokens.count)
+
+        // Full re-assignment to ensure the setter fires
         store.shield.applications = blockTokens.isEmpty ? nil : blockTokens
-        store.shield.applicationCategories = nil
-        store.shield.webDomainCategories = nil
     }
 
     // MARK: - Notifications
-
-    private func postWarningNotification(appName: String) {
-        let content = UNMutableNotificationContent()
-        content.title = "5 minutes remaining"
-        content.body = "\(appName) will be blocked again soon."
-        content.sound = .default
-
-        let request = UNNotificationRequest(
-            identifier: "reblock-warning-\(UUID().uuidString)",
-            content: content,
-            trigger: nil
-        )
-        UNUserNotificationCenter.current().add(request) { _ in }
-    }
 
     private func postReblockNotification(appName: String) {
         let content = UNMutableNotificationContent()

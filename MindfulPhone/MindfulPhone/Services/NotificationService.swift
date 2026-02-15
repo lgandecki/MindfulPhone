@@ -35,24 +35,19 @@ enum NotificationService {
         UNUserNotificationCenter.current().add(request) { _ in }
     }
 
-    /// Schedules a notification when an unlock fully expires.
-    static func scheduleExpiryNotification(appName: String, expiresAt: Date) {
+    /// Posts a "blocked again" notification immediately.
+    /// Called from the in-app reblock timer after the shield has been reapplied.
+    static func postReblockNotification(appName: String) {
         let content = UNMutableNotificationContent()
         content.title = "Time's up"
         content.body = "\(appName) has been blocked again."
         content.sound = .default
 
-        let trigger = UNTimeIntervalNotificationTrigger(
-            timeInterval: max(expiresAt.timeIntervalSinceNow, 1),
-            repeats: false
-        )
-
         let request = UNNotificationRequest(
-            identifier: "expiry-\(UUID().uuidString)",
+            identifier: "reblock-\(UUID().uuidString)",
             content: content,
-            trigger: trigger
+            trigger: nil
         )
-
         UNUserNotificationCenter.current().add(request) { _ in }
     }
 }

@@ -16,9 +16,10 @@ struct SettingsView: View {
                 } label: {
                     HStack {
                         Label("Update App List", systemImage: "apps.iphone")
+                            .foregroundStyle(Color.brandDeepPlum)
                         Spacer()
                         Text("\(count) apps")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.brandSoftPlum.opacity(0.6))
                     }
                 }
                 .familyActivityPicker(
@@ -63,15 +64,16 @@ struct SettingsView: View {
                 let active = UnlockManager.shared.getActiveUnlocks()
                 if active.isEmpty {
                     Text("No apps currently unlocked")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.brandSoftPlum.opacity(0.5))
                 } else {
                     ForEach(active) { unlock in
                         HStack {
                             Text(unlock.appName)
+                                .foregroundStyle(Color.brandDeepPlum)
                             Spacer()
                             Text(unlock.expiresAt, style: .relative)
                                 .font(.caption)
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(Color.brandGoldenGlow)
                         }
                     }
                 }
@@ -90,6 +92,8 @@ struct SettingsView: View {
                 Text("Starts a 5-minute countdown. Your accountability partner will be notified.")
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.brandWarmCream)
         .navigationTitle("Settings")
         .onAppear {
             viewModel.loadSettings()
@@ -130,22 +134,24 @@ private struct RemovalTimerView: View {
 
             Image(systemName: "clock.badge.exclamationmark")
                 .font(.system(size: 48))
-                .foregroundStyle(.orange)
+                .foregroundStyle(Color.brandGoldenGlow)
 
             VStack(spacing: 12) {
                 Text("Removal Timer")
                     .font(.title2)
                     .fontWeight(.bold)
+                    .foregroundStyle(Color.brandDeepPlum)
 
                 Text("Wait for the timer to complete, then try removing apps again.")
                     .font(.body)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.brandSoftPlum.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
 
             Text(formattedTime)
                 .font(.system(size: 56, weight: .light, design: .monospaced))
+                .foregroundStyle(Color.brandDeepPlum)
 
             Spacer()
 
@@ -153,14 +159,12 @@ private struct RemovalTimerView: View {
                 viewModel.cancelRemovalTimer()
             } label: {
                 Text("Cancel")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(BrandSecondaryButtonStyle())
             .padding(.horizontal, 24)
         }
         .padding(24)
+        .background(Color.brandWarmCream.ignoresSafeArea())
         .interactiveDismissDisabled()
     }
 

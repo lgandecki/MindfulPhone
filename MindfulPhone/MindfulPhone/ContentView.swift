@@ -64,6 +64,7 @@ struct ContentView: View {
         let manager = AppGroupManager.shared
         let blocking = BlockingService.shared
 
+        #if !DEBUG
         if manager.isOnboardingComplete {
             let authStatus = AuthorizationCenter.shared.authorizationStatus
             if authStatus != .approved {
@@ -77,6 +78,7 @@ struct ContentView: View {
                 return
             }
         }
+        #endif
 
         hasPendingRequest = manager.getPendingUnlockRequest(
             maxAge: Self.pendingRequestMaxAgeSeconds
@@ -250,6 +252,7 @@ struct MainTabView: View {
                 }
             }
         }
+        .tint(Color.brandSoftPlum)
     }
 }
 
@@ -275,26 +278,29 @@ struct DashboardView: View {
                 VStack(spacing: 12) {
                     Image(systemName: "shield.checkered")
                         .font(.system(size: 48))
-                        .foregroundStyle(.green)
+                        .foregroundStyle(Color.brandSoftPlum)
 
                     Text(streakText)
                         .font(.title2)
                         .fontWeight(.semibold)
+                        .foregroundStyle(Color.brandDeepPlum)
 
                     Text("All apps are shielded. Open any blocked app to start an unlock request.")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.brandSoftPlum.opacity(0.7))
                         .multilineTextAlignment(.center)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(24)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
+                .background(.white, in: RoundedRectangle(cornerRadius: 20))
+                .shadow(color: Color.brandLavender.opacity(0.2), radius: 12, y: 4)
 
                 // Active Unlocks
                 if !activeUnlocks.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Active Unlocks")
                             .font(.headline)
+                            .foregroundStyle(Color.brandDeepPlum)
 
                         ForEach(activeUnlocks) { unlock in
                             HStack {
@@ -302,9 +308,10 @@ struct DashboardView: View {
                                     Text(unlock.appName)
                                         .font(.subheadline)
                                         .fontWeight(.medium)
+                                        .foregroundStyle(Color.brandDeepPlum)
                                     Text(unlock.reason)
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(Color.brandSoftPlum.opacity(0.6))
                                         .lineLimit(1)
                                 }
 
@@ -313,15 +320,16 @@ struct DashboardView: View {
                                 VStack(alignment: .trailing, spacing: 2) {
                                     Text("Expires")
                                         .font(.caption2)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(Color.brandSoftPlum.opacity(0.5))
                                     Text(unlock.expiresAt, style: .relative)
                                         .font(.caption)
                                         .fontWeight(.medium)
-                                        .foregroundStyle(.orange)
+                                        .foregroundStyle(Color.brandGoldenGlow)
                                 }
                             }
                             .padding(12)
-                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                            .background(.white, in: RoundedRectangle(cornerRadius: 12))
+                            .shadow(color: Color.brandLavender.opacity(0.1), radius: 6, y: 2)
                         }
                     }
                 }
@@ -332,14 +340,15 @@ struct DashboardView: View {
                 } label: {
                     HStack {
                         Label("View Stats", systemImage: "chart.bar")
+                            .foregroundStyle(Color.brandDeepPlum)
                         Spacer()
                         Image(systemName: "chevron.right")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.brandLavender)
                     }
                     .padding(16)
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .background(.white, in: RoundedRectangle(cornerRadius: 12))
+                    .shadow(color: Color.brandLavender.opacity(0.1), radius: 6, y: 2)
                 }
-                .foregroundStyle(.primary)
 
                 // Debug diagnostics (temporary)
                 VStack(alignment: .leading, spacing: 8) {
@@ -355,7 +364,7 @@ struct DashboardView: View {
                                 .frame(width: 120, alignment: .leading)
                             Text(value)
                                 .font(.caption2)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.brandSoftPlum.opacity(0.5))
                         }
                     }
 
@@ -363,21 +372,22 @@ struct DashboardView: View {
                         refreshDiagnostics()
                     }
                     .font(.caption)
+                    .foregroundStyle(Color.brandSoftPlum)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(16)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .background(.white.opacity(0.7), in: RoundedRectangle(cornerRadius: 12))
 
                 if !extensionLogs.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Extension Logs")
                             .font(.headline)
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(Color.brandGoldenGlow)
 
                         ForEach(Array(extensionLogs.indices), id: \.self) { index in
                             Text(extensionLogs[index])
                                 .font(.caption2)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.brandSoftPlum.opacity(0.5))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
@@ -386,14 +396,16 @@ struct DashboardView: View {
                             refreshDiagnostics()
                         }
                         .font(.caption)
+                        .foregroundStyle(Color.brandSoftPlum)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(16)
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .background(.white.opacity(0.7), in: RoundedRectangle(cornerRadius: 12))
                 }
             }
             .padding(16)
         }
+        .background(Color.brandWarmCream)
         .navigationTitle("MindfulPhone")
         .onAppear {
             activeUnlocks = UnlockManager.shared.getActiveUnlocks()

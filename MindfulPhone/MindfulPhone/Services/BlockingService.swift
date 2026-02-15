@@ -53,12 +53,11 @@ final class BlockingService: ObservableObject {
     }
 
     /// Re-applies the shield for a specific app token.
+    /// Uses explicit re-assignment (not in-place mutation) to ensure the setter fires.
     func reapplyShield(for token: ApplicationToken) {
-        if store.shield.applications != nil {
-            store.shield.applications?.insert(token)
-        } else {
-            store.shield.applications = [token]
-        }
+        var apps = store.shield.applications ?? Set<ApplicationToken>()
+        apps.insert(token)
+        store.shield.applications = apps
     }
 
     /// Removes all shields entirely.
