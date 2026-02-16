@@ -52,7 +52,7 @@ final class ClaudeAPIService {
         }
 
         let body: [String: Any] = [
-            "model": "claude-sonnet-4-5-20250929",
+            "model": "claude-sonnet-4-5",
             "max_tokens": 1024,
             "system": systemPrompt,
             "messages": messages,
@@ -125,11 +125,7 @@ final class ClaudeAPIService {
         1. When you approve a TEMPORARY unlock:
            [APPROVED:XX] where XX is the number of minutes.
 
-        2. When you approve a PERMANENT exemption (the user asks to never block this app again, \
-        and the app is clearly essential — e.g., Phone, Messages, Maps, banking, authentication):
-           [APPROVED:0][PERMANENT_EXEMPT]
-
-        3. When the app name is "this app" (first encounter — iOS limitation), the user will tell \
+        2. When the app name is "this app" (first encounter — iOS limitation), the user will tell \
         you which app they mean. Extract the name and include:
            [APP_NAME:ExactAppName]
            Use the exact app name as the user stated it (e.g., "Instagram", "Messages", "Google Maps"). \
@@ -137,11 +133,9 @@ final class ClaudeAPIService {
 
         Example responses:
         - "Checking your flight? Absolutely. [APP_NAME:United Airlines][APPROVED:15]"
-        - "Messages is clearly essential — I'll unblock it permanently for you. [APP_NAME:Messages][APPROVED:0][PERMANENT_EXEMPT]"
         - "You want to open Instagram. What specifically do you need to do there? [APP_NAME:Instagram]"
 
-        Do NOT include [APPROVED:XX] unless you are actually approving. \
-        Do NOT grant [PERMANENT_EXEMPT] for social media, games, or entertainment apps.
+        Do NOT include [APPROVED:XX] unless you are actually approving.
         """
 
         if !unlockHistory.isEmpty {
