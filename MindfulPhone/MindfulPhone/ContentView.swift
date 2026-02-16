@@ -64,7 +64,6 @@ struct ContentView: View {
         let manager = AppGroupManager.shared
         let blocking = BlockingService.shared
 
-        #if !DEBUG
         if manager.isOnboardingComplete {
             let authStatus = AuthorizationCenter.shared.authorizationStatus
             if authStatus != .approved {
@@ -78,7 +77,6 @@ struct ContentView: View {
                 return
             }
         }
-        #endif
 
         hasPendingRequest = manager.getPendingUnlockRequest(
             maxAge: Self.pendingRequestMaxAgeSeconds
@@ -260,8 +258,6 @@ struct MainTabView: View {
 
 struct DashboardView: View {
     @State private var activeUnlocks: [ActiveUnlockRecord] = []
-    @State private var diagnostics: [String: String] = [:]
-    @State private var extensionLogs: [String] = []
 
     private var streakText: String {
         guard let activation = AppGroupManager.shared.activationDate else {
@@ -350,58 +346,6 @@ struct DashboardView: View {
                     .shadow(color: Color.brandLavender.opacity(0.1), radius: 6, y: 2)
                 }
 
-                // Debug diagnostics (temporary)
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Debug Info")
-                        .font(.headline)
-                        .foregroundStyle(.red)
-
-                    ForEach(diagnostics.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
-                        HStack(alignment: .top) {
-                            Text(key + ":")
-                                .font(.caption2)
-                                .fontWeight(.medium)
-                                .frame(width: 120, alignment: .leading)
-                            Text(value)
-                                .font(.caption2)
-                                .foregroundStyle(Color.brandSoftPlum.opacity(0.5))
-                        }
-                    }
-
-                    Button("Refresh") {
-                        refreshDiagnostics()
-                    }
-                    .font(.caption)
-                    .foregroundStyle(Color.brandSoftPlum)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(16)
-                .background(Color.brandCardBackground.opacity(0.7), in: RoundedRectangle(cornerRadius: 12))
-
-                if !extensionLogs.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Extension Logs")
-                            .font(.headline)
-                            .foregroundStyle(Color.brandGoldenGlow)
-
-                        ForEach(Array(extensionLogs.indices), id: \.self) { index in
-                            Text(extensionLogs[index])
-                                .font(.caption2)
-                                .foregroundStyle(Color.brandSoftPlum.opacity(0.5))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-
-                        Button("Clear Logs") {
-                            AppGroupManager.shared.clearExtensionLogs()
-                            refreshDiagnostics()
-                        }
-                        .font(.caption)
-                        .foregroundStyle(Color.brandSoftPlum)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(16)
-                    .background(Color.brandCardBackground.opacity(0.7), in: RoundedRectangle(cornerRadius: 12))
-                }
             }
             .padding(16)
         }
@@ -409,30 +353,6 @@ struct DashboardView: View {
         .navigationTitle("MindfulPhone")
         .onAppear {
             activeUnlocks = UnlockManager.shared.getActiveUnlocks()
-            refreshDiagnostics()
-        }
-    }
-
-    private func refreshDiagnostics() {
-        diagnostics = AppGroupManager.shared.diagnosticInfo()
-        extensionLogs = AppGroupManager.shared.getExtensionLogs(limit: 25)
-
-        Task {
-            let settings = await UNUserNotificationCenter.current().notificationSettings()
-            await MainActor.run {
-                diagnostics["notificationAuthorization"] = notificationStatusText(settings.authorizationStatus)
-            }
-        }
-    }
-
-    private func notificationStatusText(_ status: UNAuthorizationStatus) -> String {
-        switch status {
-        case .notDetermined: return "notDetermined"
-        case .denied: return "denied"
-        case .authorized: return "authorized"
-        case .provisional: return "provisional"
-        case .ephemeral: return "ephemeral"
-        @unknown default: return "unknown"
         }
     }
 }
