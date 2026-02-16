@@ -8,60 +8,66 @@ struct ChatView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            chatHeader
+            if viewModel.messages.isEmpty && !viewModel.hasPendingRequest {
+                emptyState
+            } else {
+                // Header
+                chatHeader
 
-            // Messages
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(viewModel.messages) { message in
-                            ChatBubbleView(message: message)
+                // Messages
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(viewModel.messages) { message in
+                                ChatBubbleView(message: message)
+                            }
+
+                            if viewModel.isLoading {
+                                typingIndicator
+                            }
+
+                            if viewModel.isApproved {
+                                approvalBanner
+                            }
+
+                            if let error = viewModel.errorMessage {
+                                errorBanner(error)
+                            }
+
+                            Color.clear
+                                .frame(height: 1)
+                                .id("bottom")
                         }
-
-                        if viewModel.isLoading {
-                            typingIndicator
-                        }
-
-                        if viewModel.isApproved {
-                            approvalBanner
-                        }
-
-                        if let error = viewModel.errorMessage {
-                            errorBanner(error)
-                        }
-
-                        Color.clear
-                            .frame(height: 1)
-                            .id("bottom")
+                        .padding(.horizontal, 16)
+                        .padding(.top, 12)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 12)
-                }
-                .background(Color.brandWarmCream.opacity(0.5))
-                .onChange(of: viewModel.messages.count) {
-                    withAnimation {
-                        proxy.scrollTo("bottom", anchor: .bottom)
+                    .background(Color.brandWarmCream.opacity(0.5))
+                    .onChange(of: viewModel.messages.count) {
+                        withAnimation {
+                            proxy.scrollTo("bottom", anchor: .bottom)
+                        }
+                    }
+                    .onChange(of: viewModel.isLoading) {
+                        withAnimation {
+                            proxy.scrollTo("bottom", anchor: .bottom)
+                        }
                     }
                 }
-                .onChange(of: viewModel.isLoading) {
-                    withAnimation {
-                        proxy.scrollTo("bottom", anchor: .bottom)
-                    }
-                }
-            }
 
-            // Input
-            if !viewModel.isApproved {
-                ChatInputView(
-                    text: $viewModel.inputText,
-                    isLoading: viewModel.isLoading,
-                    showOfflineOption: viewModel.showOfflineOption,
-                    onSend: { viewModel.sendMessage() },
-                    onOfflineUnlock: { viewModel.offlineUnlock() }
-                )
+                // Input
+                if !viewModel.isApproved {
+                    ChatInputView(
+                        text: $viewModel.inputText,
+                        isLoading: viewModel.isLoading,
+                        showOfflineOption: viewModel.showOfflineOption,
+                        onSend: { viewModel.sendMessage() },
+                        onOfflineUnlock: { viewModel.offlineUnlock() }
+                    )
+                }
             }
         }
+        .navigationTitle("Chat")
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.setup(modelContext: modelContext)
         }
@@ -74,6 +80,31 @@ struct ChatView: View {
     }
 
     // MARK: - Subviews
+
+    private var emptyState: some View {
+        VStack(spacing: 16) {
+            Spacer()
+
+            Image(systemName: "bubble.left.and.bubble.right")
+                .font(.system(size: 48))
+                .foregroundStyle(Color.brandLavender)
+
+            Text("No conversations yet")
+                .font(.title3)
+                .fontWeight(.semibold)
+                .foregroundStyle(Color.brandDeepPlum)
+
+            Text("Open a blocked app to start a conversation. You'll explain why you need access, and Claude will help you stay mindful.")
+                .font(.subheadline)
+                .foregroundStyle(Color.brandSoftPlum.opacity(0.7))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.brandWarmCream)
+    }
 
     private var chatHeader: some View {
         VStack(spacing: 4) {

@@ -12,7 +12,12 @@ struct ContentView: View {
     @State private var hasPendingRequest = AppGroupManager.shared.getPendingUnlockRequest(
         maxAge: Self.pendingRequestMaxAgeSeconds
     ) != nil
+    @State private var selectedTab: AppTab = .dashboard
     @State private var showSplash = true
+
+    enum AppTab: Hashable {
+        case dashboard, chat, history, settings
+    }
 
     var body: some View {
         ZStack {
@@ -21,12 +26,8 @@ struct ContentView: View {
                     OnboardingContainerView {
                         isOnboardingComplete = true
                     }
-                } else if hasPendingRequest {
-                    NavigationStack {
-                        ChatView()
-                    }
                 } else {
-                    MainTabView()
+                    MainTabView(selectedTab: $selectedTab)
                 }
             }
 
@@ -78,11 +79,17 @@ struct ContentView: View {
             }
         }
 
+        let hadPendingRequest = hasPendingRequest
         hasPendingRequest = manager.getPendingUnlockRequest(
             maxAge: Self.pendingRequestMaxAgeSeconds
         ) != nil
         isOnboardingComplete = manager.isOnboardingComplete
         UnlockManager.shared.recheckExpiredUnlocks()
+
+        // Auto-switch to Chat tab when a new pending request arrives
+        if hasPendingRequest && !hadPendingRequest {
+            selectedTab = .chat
+        }
 
         if !hasPendingRequest {
             Task {
@@ -159,6 +166,9 @@ struct ContentView: View {
         hasPendingRequest = AppGroupManager.shared.getPendingUnlockRequest(
             maxAge: Self.pendingRequestMaxAgeSeconds
         ) != nil
+        if hasPendingRequest {
+            selectedTab = .chat
+        }
     }
 
     private func saveExtensionDiagnosticsFromUserInfo(_ userInfo: [AnyHashable: Any]) {
@@ -230,21 +240,29 @@ struct ContentView: View {
 // MARK: - Main Tab View
 
 struct MainTabView: View {
+    @Binding var selectedTab: ContentView.AppTab
+
     var body: some View {
-        TabView {
-            Tab("Dashboard", systemImage: "gauge.open.with.lines.needle.33percent") {
+        TabView(selection: $selectedTab) {
+            Tab("Dashboard", systemImage: "gauge.open.with.lines.needle.33percent", value: .dashboard) {
                 NavigationStack {
                     DashboardView()
                 }
             }
 
-            Tab("History", systemImage: "clock") {
+            Tab("Chat", systemImage: "bubble.left.and.bubble.right", value: .chat) {
+                NavigationStack {
+                    ChatView()
+                }
+            }
+
+            Tab("History", systemImage: "clock", value: .history) {
                 NavigationStack {
                     HistoryListView()
                 }
             }
 
-            Tab("Settings", systemImage: "gear") {
+            Tab("Settings", systemImage: "gear", value: .settings) {
                 NavigationStack {
                     SettingsView()
                 }

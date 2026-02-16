@@ -27,7 +27,11 @@ struct AuthorizationStepView: View {
             }
             .padding(.horizontal)
 
-            if viewModel.isAuthorized {
+            if viewModel.isRequestingAuth {
+                ProgressView()
+                    .controlSize(.large)
+                    .tint(Color.brandSoftPlum)
+            } else if viewModel.isAuthorized {
                 Label("Authorized", systemImage: "checkmark.circle.fill")
                     .font(.headline)
                     .foregroundStyle(.green)
@@ -45,6 +49,8 @@ struct AuthorizationStepView: View {
                         Text("Authorize with Face ID")
                     }
                     .buttonStyle(BrandButtonStyle())
+                    .disabled(viewModel.isRequestingAuth)
+                    .opacity(viewModel.isRequestingAuth ? 0.5 : 1)
                 }
 
                 Button {

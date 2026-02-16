@@ -24,25 +24,23 @@ struct OnboardingContainerView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 12)
 
-                // Content
-                TabView(selection: $viewModel.currentStep) {
-                    WelcomeStepView(onContinue: { viewModel.advance() })
-                        .tag(OnboardingViewModel.OnboardingStep.welcome)
-
-                    AuthorizationStepView(viewModel: viewModel)
-                        .tag(OnboardingViewModel.OnboardingStep.authorization)
-
-                    AppSelectionStepView(viewModel: viewModel)
-                        .tag(OnboardingViewModel.OnboardingStep.appSelection)
-
-                    PartnerSetupStepView(viewModel: viewModel)
-                        .tag(OnboardingViewModel.OnboardingStep.partnerSetup)
-
-                    ActivateStepView(viewModel: viewModel, onComplete: onComplete)
-                        .tag(OnboardingViewModel.OnboardingStep.activate)
+                // Content — only the active step is rendered so heavy views
+                // like FamilyActivityPicker don't linger in memory.
+                Group {
+                    switch viewModel.currentStep {
+                    case .welcome:
+                        WelcomeStepView(onContinue: { viewModel.advance() })
+                    case .authorization:
+                        AuthorizationStepView(viewModel: viewModel)
+                    case .appSelection:
+                        AppSelectionStepView(viewModel: viewModel)
+                    case .partnerSetup:
+                        PartnerSetupStepView(viewModel: viewModel)
+                    case .activate:
+                        ActivateStepView(viewModel: viewModel, onComplete: onComplete)
+                    }
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .animation(.easeInOut, value: viewModel.currentStep)
+                .transition(.opacity)
             }
         }
     }

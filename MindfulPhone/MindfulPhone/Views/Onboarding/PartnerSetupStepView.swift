@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PartnerSetupStepView: View {
     @Bindable var viewModel: OnboardingViewModel
+    @FocusState private var nameFieldFocused: Bool
     @State private var skipCountdown = 5
     @State private var skipVisible = false
 
@@ -34,6 +35,7 @@ struct PartnerSetupStepView: View {
 
                 VStack(spacing: 0) {
                     TextField("Your first name", text: $viewModel.userName)
+                        .focused($nameFieldFocused)
                         .textContentType(.givenName)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
@@ -86,6 +88,9 @@ struct PartnerSetupStepView: View {
             .padding(.bottom, 24)
         }
         .scrollDismissesKeyboard(.interactively)
+        .onAppear {
+            nameFieldFocused = true
+        }
         .task {
             for _ in 0..<5 {
                 try? await Task.sleep(for: .seconds(1))

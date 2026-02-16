@@ -7,6 +7,7 @@ import ManagedSettings
 final class OnboardingViewModel {
     var currentStep: OnboardingStep = .welcome
     var isAuthorized = false
+    var isRequestingAuth = false
     var isActivating = false
     var userName = ""
     var partnerEmail = ""
@@ -51,6 +52,7 @@ final class OnboardingViewModel {
     // MARK: - Authorization
 
     func requestAuthorization() async {
+        isRequestingAuth = true
         do {
             try await BlockingService.shared.requestAuthorization()
             isAuthorized = BlockingService.shared.isAuthorized
@@ -61,6 +63,7 @@ final class OnboardingViewModel {
         } catch {
             isAuthorized = false
         }
+        isRequestingAuth = false
     }
 
     // MARK: - Activation

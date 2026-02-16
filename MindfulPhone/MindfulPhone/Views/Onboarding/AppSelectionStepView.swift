@@ -4,15 +4,13 @@ import FamilyControls
 struct AppSelectionStepView: View {
     @Bindable var viewModel: OnboardingViewModel
     @State private var showingPicker = false
+    @State private var cachedAppCount = 0
+    @State private var isSaving = false
 
     private static let appLimit = 50
 
-    private var appCount: Int {
-        viewModel.allAppsSelection.applicationTokens.count
-    }
-
-    private var hasSelection: Bool { appCount > 0 }
-    private var overLimit: Bool { appCount > Self.appLimit }
+    private var hasSelection: Bool { cachedAppCount > 0 }
+    private var overLimit: Bool { cachedAppCount > Self.appLimit }
 
     var body: some View {
         VStack(spacing: 32) {
@@ -39,7 +37,7 @@ struct AppSelectionStepView: View {
             .padding(.horizontal)
 
             if hasSelection {
-                Text("\(appCount) app\(appCount == 1 ? "" : "s") selected")
+                Text("\(cachedAppCount) app\(cachedAppCount == 1 ? "" : "s") selected")
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundStyle(overLimit ? .red : Color.brandSoftPlum)
@@ -53,29 +51,67 @@ struct AppSelectionStepView: View {
                     .padding(.horizontal)
             }
 
-            Button {
-                showingPicker = true
-            } label: {
-                Label(hasSelection ? "Edit Selection" : "Choose Apps", systemImage: hasSelection ? "pencil.circle" : "plus.circle")
-                    .font(.headline)
-                    .foregroundStyle(Color.brandSoftPlum)
+            if isSaving {
+                VStack(spacing: 8) {
+                    ProgressView()
+                        .controlSize(.large)
+                        .tint(Color.brandSoftPlum)
+                    Text("Saving selection…")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.brandSoftPlum.opacity(0.7))
+                }
+            } else {
+                Button {
+                    showingPicker = true
+                } label: {
+                    Label(hasSelection ? "Edit Selection" : "Choose Apps", systemImage: hasSelection ? "pencil.circle" : "plus.circle")
+                        .font(.headline)
+                        .foregroundStyle(Color.brandSoftPlum)
+                }
+                .familyActivityPicker(
+                    isPresented: $showingPicker,
+                    selection: $viewModel.allAppsSelection
+                )
             }
-            .familyActivityPicker(
-                isPresented: $showingPicker,
-                selection: $viewModel.allAppsSelection
-            )
 
             Spacer()
 
             Button {
-                viewModel.advance()
+                guard !isSaving else { return }
+                isSaving = true
+                // Pre-cache the selection data on a background thread,
+                // then advance. This keeps the spinner visible while
+                // iOS serializes the FamilyActivitySelection.
+                let selection = viewModel.allAppsSelection
+                Task.detached {
+                    // Force the token serialization off the main thread
+                    let data = try? JSONEncoder().encode(selection)
+                    await MainActor.run {
+                        if let data {
+                            AppGroupManager.shared.saveAllAppsSelection(data)
+                        }
+                        viewModel.advance()
+                    }
+                }
             } label: {
                 Text("Continue")
             }
-            .buttonStyle(BrandButtonStyle(isDisabled: !hasSelection || overLimit))
-            .disabled(!hasSelection || overLimit)
+            .buttonStyle(BrandButtonStyle(isDisabled: !hasSelection || overLimit || isSaving))
+            .disabled(!hasSelection || overLimit || isSaving)
             .padding(.horizontal, 24)
         }
         .padding(24)
+        .onChange(of: showingPicker) {
+            if !showingPicker {
+                Task.detached {
+                    let count = await MainActor.run {
+                        viewModel.allAppsSelection.applicationTokens.count
+                    }
+                    await MainActor.run {
+                        cachedAppCount = count
+                    }
+                }
+            }
+        }
     }
 }
