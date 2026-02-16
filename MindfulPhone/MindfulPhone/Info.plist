@@ -9,6 +9,8 @@
 		<key>UIColorName</key>
 		<string>LaunchBackground</string>
 	</dict>
+	<key>NSFamilyControlsUsageDescription</key>
+	<string>MindfulPhone uses Screen Time controls to shield apps and help you be intentional about your phone usage. You choose which apps to manage.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>processing</string>
