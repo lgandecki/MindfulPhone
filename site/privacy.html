@@ -1,414 +1,484 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy — MindfulPhone</title>
-  <meta name="description" content="Privacy Policy for MindfulPhone. Learn how we handle your data with care and transparency.">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy — MindfulPhone</title>
+    <meta
+      name="description"
+      content="Privacy Policy for MindfulPhone. Learn how we handle your data with care and transparency."
+    />
 
-  <link rel="icon" type="image/png" href="assets/icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
 
-  <style>
-    :root {
-      --lavender: #B8A9C9;
-      --peach: #F4C1A0;
-      --warm-cream: #FDF6F0;
-      --deep-plum: #2A1B3D;
-      --soft-plum: #4A3460;
-      --muted-rose: #C9A0A0;
-      --golden-glow: #E8C87A;
-      --text-primary: #1A1028;
-      --text-secondary: #6B5B7B;
-      --text-on-dark: #E8DFF0;
-      --text-muted-dark: #A090B8;
-      --gradient-start: #C4B5D8;
-      --gradient-end: #F2C8A8;
-    }
+    <style>
+      :root {
+        --lavender: #b8a9c9;
+        --peach: #f4c1a0;
+        --warm-cream: #fdf6f0;
+        --deep-plum: #2a1b3d;
+        --soft-plum: #4a3460;
+        --muted-rose: #c9a0a0;
+        --golden-glow: #e8c87a;
+        --text-primary: #1a1028;
+        --text-secondary: #6b5b7b;
+        --text-on-dark: #e8dff0;
+        --text-muted-dark: #a090b8;
+        --gradient-start: #c4b5d8;
+        --gradient-end: #f2c8a8;
+      }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-    html {
-      scroll-behavior: smooth;
-    }
+      html {
+        scroll-behavior: smooth;
+      }
 
-    body {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 300;
-      color: var(--text-primary);
-      overflow-x: hidden;
-      background: var(--warm-cream);
-      -webkit-font-smoothing: antialiased;
-    }
+      body {
+        font-family: "Outfit", sans-serif;
+        font-weight: 300;
+        color: var(--text-primary);
+        overflow-x: hidden;
+        background: var(--warm-cream);
+        -webkit-font-smoothing: antialiased;
+      }
 
-    /* ─── GRAIN OVERLAY ─── */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      opacity: 0.025;
-      pointer-events: none;
-      z-index: 9999;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    }
+      /* ─── GRAIN OVERLAY ─── */
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        opacity: 0.025;
+        pointer-events: none;
+        z-index: 9999;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
 
-    /* ─── TYPOGRAPHY ─── */
-    h1, h2, h3 {
-      font-family: 'Instrument Serif', serif;
-      font-weight: 400;
-    }
+      /* ─── TYPOGRAPHY ─── */
+      h1,
+      h2,
+      h3 {
+        font-family: "Instrument Serif", serif;
+        font-weight: 400;
+      }
 
-    a {
-      color: var(--soft-plum);
-      text-decoration: underline;
-      text-decoration-color: rgba(74, 52, 96, 0.3);
-      text-underline-offset: 3px;
-      transition: all 0.2s ease;
-    }
+      a {
+        color: var(--soft-plum);
+        text-decoration: underline;
+        text-decoration-color: rgba(74, 52, 96, 0.3);
+        text-underline-offset: 3px;
+        transition: all 0.2s ease;
+      }
 
-    a:hover {
-      text-decoration-color: var(--soft-plum);
-    }
+      a:hover {
+        text-decoration-color: var(--soft-plum);
+      }
 
-    /* ─── NAV ─── */
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      padding: 1.25rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      backdrop-filter: blur(20px) saturate(1.8);
-      -webkit-backdrop-filter: blur(20px) saturate(1.8);
-      background: rgba(253, 246, 240, 0.7);
-      border-bottom: 1px solid rgba(184, 169, 201, 0.15);
-    }
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      text-decoration: none;
-      color: var(--text-primary);
-    }
-
-    .nav-brand img {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-    }
-
-    .nav-brand span {
-      font-family: 'Instrument Serif', serif;
-      font-size: 1.35rem;
-      letter-spacing: -0.01em;
-    }
-
-    .nav-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.6rem 1.2rem;
-      color: var(--soft-plum);
-      text-decoration: none;
-      border-radius: 100px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      border: 1.5px solid rgba(74, 52, 96, 0.2);
-      transition: all 0.3s ease;
-    }
-
-    .nav-back:hover {
-      border-color: rgba(74, 52, 96, 0.5);
-      background: rgba(74, 52, 96, 0.05);
-    }
-
-    /* ─── PAGE HEADER ─── */
-    .page-header {
-      padding: 10rem 2rem 4rem;
-      background: linear-gradient(165deg, var(--gradient-start) 0%, var(--gradient-end) 40%, var(--warm-cream) 100%);
-      text-align: center;
-    }
-
-    .page-header h1 {
-      font-size: clamp(2.5rem, 5vw, 4rem);
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-      color: var(--deep-plum);
-      margin-bottom: 1rem;
-    }
-
-    .page-header .subtitle {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      color: var(--text-secondary);
-      max-width: 540px;
-      margin: 0 auto;
-    }
-
-    .last-updated {
-      display: inline-block;
-      font-size: 0.8rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--soft-plum);
-      background: rgba(255, 255, 255, 0.5);
-      backdrop-filter: blur(8px);
-      padding: 0.4rem 1rem;
-      border-radius: 100px;
-      margin-bottom: 1.5rem;
-      border: 1px solid rgba(184, 169, 201, 0.3);
-    }
-
-    /* ─── CONTENT ─── */
-    .policy-content {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 4rem 2rem 6rem;
-    }
-
-    .policy-section {
-      margin-bottom: 3rem;
-    }
-
-    .policy-section h2 {
-      font-size: 1.8rem;
-      color: var(--deep-plum);
-      margin-bottom: 1.2rem;
-      letter-spacing: -0.02em;
-    }
-
-    .policy-section p {
-      font-size: 1rem;
-      line-height: 1.8;
-      color: var(--text-secondary);
-      margin-bottom: 1rem;
-    }
-
-    .policy-section p:last-child {
-      margin-bottom: 0;
-    }
-
-    .policy-section strong {
-      color: var(--text-primary);
-      font-weight: 500;
-    }
-
-    .policy-section ul {
-      list-style: none;
-      padding: 0;
-      margin: 0.5rem 0 1rem;
-    }
-
-    .policy-section ul li {
-      position: relative;
-      padding-left: 1.5rem;
-      font-size: 1rem;
-      line-height: 1.8;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-    }
-
-    .policy-section ul li::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0.7rem;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--lavender), var(--peach));
-    }
-
-    .section-divider {
-      width: 60px;
-      height: 2px;
-      background: linear-gradient(90deg, var(--lavender), var(--peach));
-      margin: 3rem 0;
-      border-radius: 2px;
-    }
-
-    /* ─── FOOTER ─── */
-    .built-with {
-      padding: 2rem 2rem 1.5rem;
-      background: var(--deep-plum);
-      text-align: center;
-    }
-
-    .built-with p {
-      font-size: 0.85rem;
-      color: var(--text-muted-dark);
-      opacity: 0.5;
-    }
-
-    .built-with span {
-      opacity: 0.8;
-    }
-
-    footer {
-      padding: 2.5rem 2rem;
-      background: #1A1028;
-      text-align: center;
-    }
-
-    footer p {
-      font-size: 0.8rem;
-      color: var(--text-muted-dark);
-      opacity: 0.5;
-    }
-
-    footer a {
-      color: var(--text-muted-dark);
-      text-decoration: none;
-      transition: opacity 0.2s;
-    }
-
-    footer a:hover {
-      opacity: 0.8;
-    }
-
-    /* ─── RESPONSIVE ─── */
-    @media (max-width: 768px) {
+      /* ─── NAV ─── */
       nav {
-        padding: 1rem 1.25rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 1.25rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        backdrop-filter: blur(20px) saturate(1.8);
+        -webkit-backdrop-filter: blur(20px) saturate(1.8);
+        background: rgba(253, 246, 240, 0.7);
+        border-bottom: 1px solid rgba(184, 169, 201, 0.15);
       }
 
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        text-decoration: none;
+        color: var(--text-primary);
+      }
+
+      .nav-brand img {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+      }
+
+      .nav-brand span {
+        font-family: "Instrument Serif", serif;
+        font-size: 1.35rem;
+        letter-spacing: -0.01em;
+      }
+
+      .nav-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.6rem 1.2rem;
+        color: var(--soft-plum);
+        text-decoration: none;
+        border-radius: 100px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        border: 1.5px solid rgba(74, 52, 96, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .nav-back:hover {
+        border-color: rgba(74, 52, 96, 0.5);
+        background: rgba(74, 52, 96, 0.05);
+      }
+
+      /* ─── PAGE HEADER ─── */
       .page-header {
-        padding: 8rem 1.25rem 3rem;
+        padding: 10rem 2rem 4rem;
+        background: linear-gradient(165deg, var(--gradient-start) 0%, var(--gradient-end) 40%, var(--warm-cream) 100%);
+        text-align: center;
       }
 
+      .page-header h1 {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        color: var(--deep-plum);
+        margin-bottom: 1rem;
+      }
+
+      .page-header .subtitle {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: var(--text-secondary);
+        max-width: 540px;
+        margin: 0 auto;
+      }
+
+      .last-updated {
+        display: inline-block;
+        font-size: 0.8rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--soft-plum);
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(8px);
+        padding: 0.4rem 1rem;
+        border-radius: 100px;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(184, 169, 201, 0.3);
+      }
+
+      /* ─── CONTENT ─── */
       .policy-content {
-        padding: 3rem 1.25rem 5rem;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 4rem 2rem 6rem;
+      }
+
+      .policy-section {
+        margin-bottom: 3rem;
       }
 
       .policy-section h2 {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
+        color: var(--deep-plum);
+        margin-bottom: 1.2rem;
+        letter-spacing: -0.02em;
       }
-    }
-  </style>
-</head>
-<body>
 
-  <!-- NAV -->
-  <nav>
-    <a href="index.html" class="nav-brand">
-      <img src="assets/icon.png" alt="MindfulPhone icon">
-      <span>MindfulPhone</span>
-    </a>
-    <a href="index.html" class="nav-back">
-      &larr; Back to Home
-    </a>
-  </nav>
+      .policy-section p {
+        font-size: 1rem;
+        line-height: 1.8;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+      }
 
-  <!-- HEADER -->
-  <section class="page-header">
-    <span class="last-updated">Last Updated: February 2025</span>
-    <h1>Privacy Policy</h1>
-    <p class="subtitle">MindfulPhone is built on a simple principle: your data belongs to you. Here is how we handle it.</p>
-  </section>
+      .policy-section p:last-child {
+        margin-bottom: 0;
+      }
 
-  <!-- POLICY CONTENT -->
-  <div class="policy-content">
+      .policy-section strong {
+        color: var(--text-primary);
+        font-weight: 500;
+      }
 
-    <div class="policy-section">
-      <h2>What We Collect</h2>
-      <p>MindfulPhone stores all personal data locally on your device using Apple's SwiftData framework. This includes:</p>
-      <ul>
-        <li><strong>Unlock history</strong> &mdash; the app name, your stated reason, a timestamp, and whether access was approved or denied</li>
-        <li><strong>Conversation messages</strong> &mdash; the messages you exchange with the AI when requesting access to a blocked app</li>
-        <li><strong>App selection preferences</strong> &mdash; which apps you have chosen to block</li>
-        <li><strong>Accountability partner email</strong> &mdash; if you optionally configure an accountability partner, their email address is stored locally on your device</li>
-      </ul>
-      <p>MindfulPhone does not require an account, registration, or login. There are no analytics SDKs, no advertising frameworks, and no tracking of any kind.</p>
+      .policy-section ul {
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0 1rem;
+      }
+
+      .policy-section ul li {
+        position: relative;
+        padding-left: 1.5rem;
+        font-size: 1rem;
+        line-height: 1.8;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+      }
+
+      .policy-section ul li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.7rem;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--lavender), var(--peach));
+      }
+
+      .section-divider {
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, var(--lavender), var(--peach));
+        margin: 3rem 0;
+        border-radius: 2px;
+      }
+
+      /* ─── FOOTER ─── */
+      .built-with {
+        padding: 2rem 2rem 1.5rem;
+        background: var(--deep-plum);
+        text-align: center;
+      }
+
+      .built-with p {
+        font-size: 0.85rem;
+        color: var(--text-muted-dark);
+        opacity: 0.5;
+      }
+
+      .built-with span {
+        opacity: 0.8;
+      }
+
+      footer {
+        padding: 2.5rem 2rem;
+        background: #1a1028;
+        text-align: center;
+      }
+
+      footer p {
+        font-size: 0.8rem;
+        color: var(--text-muted-dark);
+        opacity: 0.5;
+      }
+
+      footer a {
+        color: var(--text-muted-dark);
+        text-decoration: none;
+        transition: opacity 0.2s;
+      }
+
+      footer a:hover {
+        opacity: 0.8;
+      }
+
+      /* ─── RESPONSIVE ─── */
+      @media (max-width: 768px) {
+        nav {
+          padding: 1rem 1.25rem;
+        }
+
+        .page-header {
+          padding: 8rem 1.25rem 3rem;
+        }
+
+        .policy-content {
+          padding: 3rem 1.25rem 5rem;
+        }
+
+        .policy-section h2 {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAV -->
+    <nav>
+      <a href="index.html" class="nav-brand">
+        <img src="assets/icon.png" alt="MindfulPhone icon" />
+        <span>MindfulPhone</span>
+      </a>
+      <a href="index.html" class="nav-back"> &larr; Back to Home </a>
+    </nav>
+
+    <!-- HEADER -->
+    <section class="page-header">
+      <span class="last-updated">Last Updated: February 2025</span>
+      <h1>Privacy Policy</h1>
+      <p class="subtitle">
+        MindfulPhone is built on a simple principle: your data belongs to you. Here is how we handle it.
+      </p>
+    </section>
+
+    <!-- POLICY CONTENT -->
+    <div class="policy-content">
+      <div class="policy-section">
+        <h2>What We Collect</h2>
+        <p>
+          MindfulPhone stores all personal data locally on your device using Apple's SwiftData framework. This includes:
+        </p>
+        <ul>
+          <li>
+            <strong>Unlock history</strong> &mdash; the app name, your stated reason, a timestamp, and whether access
+            was approved or denied
+          </li>
+          <li>
+            <strong>Conversation messages</strong> &mdash; the messages you exchange with the AI when requesting access
+            to a blocked app
+          </li>
+          <li><strong>App selection preferences</strong> &mdash; which apps you have chosen to block</li>
+          <li>
+            <strong>Accountability partner email</strong> &mdash; if you optionally configure an accountability partner,
+            their email address is stored locally on your device
+          </li>
+        </ul>
+        <p>
+          MindfulPhone does not require an account, registration, or login. There are no analytics SDKs, no advertising
+          frameworks, and no tracking of any kind.
+        </p>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="policy-section">
+        <h2>How We Use Your Data</h2>
+        <p>
+          <strong>Conversation messages</strong> are sent to our server-side proxy when you interact with the AI. The
+          proxy, hosted as a Cloudflare Worker at <code>mindfulphone-claude-proxy.gozdak.workers.dev</code>, forwards
+          your messages to the Anthropic API (Claude) for processing. The proxy adds the API key server-side &mdash; the
+          app never handles the Anthropic API key directly. The proxy uses IP-based rate limiting (30 requests per 60
+          seconds) to prevent abuse but does not store your conversation content or IP address persistently.
+        </p>
+        <p>
+          <strong>Accountability partner notifications:</strong> If you enable the accountability partner feature and
+          bypass app protection, the proxy sends a notification email to the address you configured. The email address
+          is stored only on your device and is included in the request solely for the purpose of sending that
+          notification.
+        </p>
+        <p>All other data remains entirely on your device and is never transmitted to any server.</p>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="policy-section">
+        <h2>Third-Party Services</h2>
+        <p>MindfulPhone relies on two third-party services to provide AI-powered conversations:</p>
+        <ul>
+          <li>
+            <strong>Anthropic (Claude AI)</strong> &mdash; processes your conversation messages to generate responses.
+            Anthropic's handling of this data is governed by their
+            <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener">privacy policy</a>.
+          </li>
+          <li>
+            <strong>Cloudflare</strong> &mdash; hosts the proxy worker that routes requests between the app and
+            Anthropic. Cloudflare's handling of network data is governed by their
+            <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">privacy policy</a>.
+          </li>
+        </ul>
+        <p>
+          MindfulPhone uses Apple's Screen Time and Family Controls APIs to manage app blocking. This functionality runs
+          entirely on your device through Apple's frameworks.
+        </p>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="policy-section">
+        <h2>Data Storage &amp; Security</h2>
+        <p>
+          All personal data is stored locally on your device using SwiftData. We do not maintain any server-side
+          database of user data. The proxy worker is stateless &mdash; it processes requests in real time and does not
+          retain any data after the response is delivered.
+        </p>
+        <p>
+          Communication between the app and the proxy is encrypted via HTTPS. The Anthropic API key is stored securely
+          on the server side and is never exposed to or embedded in the app.
+        </p>
+        <p>
+          <strong>Deleting the app removes all locally stored data</strong>, including your unlock history, conversation
+          messages, app preferences, and accountability partner settings. Data previously sent to Anthropic during
+          conversations is subject to
+          <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener"
+            >Anthropic's data retention policy</a
+          >.
+        </p>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="policy-section">
+        <h2>Your Rights</h2>
+        <p>Because your data is stored locally on your device, you have full control over it at all times. You can:</p>
+        <ul>
+          <li>Delete the app to remove all stored data instantly</li>
+          <li>Review your unlock history and conversation logs within the app</li>
+          <li>Change or remove your accountability partner at any time</li>
+          <li>Modify which apps are blocked through the app's settings</li>
+        </ul>
+        <p>
+          If you have questions about data that may have been processed by Anthropic or Cloudflare, please refer to
+          their respective privacy policies or contact us for assistance.
+        </p>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="policy-section">
+        <h2>Children's Privacy</h2>
+        <p>
+          MindfulPhone is not intended for use by children under the age of 13. We do not knowingly collect personal
+          information from children under 13. If you believe a child under 13 has used the app and you have concerns,
+          please contact us at the email address below.
+        </p>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="policy-section">
+        <h2>Changes to This Policy</h2>
+        <p>
+          We may update this Privacy Policy from time to time. When we do, we will revise the "Last Updated" date at the
+          top of this page. We encourage you to review this policy periodically to stay informed about how we protect
+          your data.
+        </p>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="policy-section">
+        <h2>Contact</h2>
+        <p>
+          If you have any questions or concerns about this Privacy Policy or MindfulPhone's data practices, please reach
+          out:
+        </p>
+        <p>
+          <strong>Email:</strong> <a href="mailto:contact@lgandecki.net">contact@lgandecki.net</a><br />
+          <strong>Developer:</strong> Łukasz Gandecki
+        </p>
+      </div>
     </div>
 
-    <div class="section-divider"></div>
-
-    <div class="policy-section">
-      <h2>How We Use Your Data</h2>
-      <p><strong>Conversation messages</strong> are sent to our server-side proxy when you interact with the AI. The proxy, hosted as a Cloudflare Worker at <code>mindfulphone-claude-proxy.gozdak.workers.dev</code>, forwards your messages to the Anthropic API (Claude) for processing. The proxy adds the API key server-side &mdash; the app never handles the Anthropic API key directly. The proxy uses IP-based rate limiting (30 requests per 60 seconds) to prevent abuse but does not store your conversation content or IP address persistently.</p>
-      <p><strong>Accountability partner notifications:</strong> If you enable the accountability partner feature and bypass app protection, the proxy sends a notification email to the address you configured. The email address is stored only on your device and is included in the request solely for the purpose of sending that notification.</p>
-      <p>All other data remains entirely on your device and is never transmitted to any server.</p>
+    <!-- FOOTER -->
+    <div class="built-with">
+      <p>Built with <span>Claude</span> during the Anthropic Build Hackathon 2025</p>
     </div>
-
-    <div class="section-divider"></div>
-
-    <div class="policy-section">
-      <h2>Third-Party Services</h2>
-      <p>MindfulPhone relies on two third-party services to provide AI-powered conversations:</p>
-      <ul>
-        <li><strong>Anthropic (Claude AI)</strong> &mdash; processes your conversation messages to generate responses. Anthropic's handling of this data is governed by their <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener">privacy policy</a>.</li>
-        <li><strong>Cloudflare</strong> &mdash; hosts the proxy worker that routes requests between the app and Anthropic. Cloudflare's handling of network data is governed by their <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">privacy policy</a>.</li>
-      </ul>
-      <p>MindfulPhone uses Apple's Screen Time and Family Controls APIs to manage app blocking. This functionality runs entirely on your device through Apple's frameworks.</p>
-    </div>
-
-    <div class="section-divider"></div>
-
-    <div class="policy-section">
-      <h2>Data Storage &amp; Security</h2>
-      <p>All personal data is stored locally on your device using SwiftData. We do not maintain any server-side database of user data. The proxy worker is stateless &mdash; it processes requests in real time and does not retain any data after the response is delivered.</p>
-      <p>Communication between the app and the proxy is encrypted via HTTPS. The Anthropic API key is stored securely on the server side and is never exposed to or embedded in the app.</p>
-      <p><strong>Deleting the app removes all locally stored data</strong>, including your unlock history, conversation messages, app preferences, and accountability partner settings. Data previously sent to Anthropic during conversations is subject to <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener">Anthropic's data retention policy</a>.</p>
-    </div>
-
-    <div class="section-divider"></div>
-
-    <div class="policy-section">
-      <h2>Your Rights</h2>
-      <p>Because your data is stored locally on your device, you have full control over it at all times. You can:</p>
-      <ul>
-        <li>Delete the app to remove all stored data instantly</li>
-        <li>Review your unlock history and conversation logs within the app</li>
-        <li>Change or remove your accountability partner at any time</li>
-        <li>Modify which apps are blocked through the app's settings</li>
-      </ul>
-      <p>If you have questions about data that may have been processed by Anthropic or Cloudflare, please refer to their respective privacy policies or contact us for assistance.</p>
-    </div>
-
-    <div class="section-divider"></div>
-
-    <div class="policy-section">
-      <h2>Children's Privacy</h2>
-      <p>MindfulPhone is not intended for use by children under the age of 13. We do not knowingly collect personal information from children under 13. If you believe a child under 13 has used the app and you have concerns, please contact us at the email address below.</p>
-    </div>
-
-    <div class="section-divider"></div>
-
-    <div class="policy-section">
-      <h2>Changes to This Policy</h2>
-      <p>We may update this Privacy Policy from time to time. When we do, we will revise the "Last Updated" date at the top of this page. We encourage you to review this policy periodically to stay informed about how we protect your data.</p>
-    </div>
-
-    <div class="section-divider"></div>
-
-    <div class="policy-section">
-      <h2>Contact</h2>
-      <p>If you have any questions or concerns about this Privacy Policy or MindfulPhone's data practices, please reach out:</p>
-      <p><strong>Email:</strong> <a href="mailto:mindfulphone@lgandecki.com">mindfulphone@lgandecki.com</a><br>
-      <strong>Developer:</strong> Lukasz Gandecki</p>
-    </div>
-
-  </div>
-
-  <!-- FOOTER -->
-  <div class="built-with">
-    <p>Built with <span>Claude</span> during the Anthropic Build Hackathon 2025</p>
-  </div>
-  <footer>
-    <p>&copy; 2025 Lukasz Gandecki &middot; <a href="privacy.html">Privacy Policy</a></p>
-  </footer>
-
-</body>
+    <footer>
+      <p>&copy; 2025 Lukasz Gandecki &middot; <a href="privacy.html">Privacy Policy</a></p>
+    </footer>
+  </body>
 </html>
