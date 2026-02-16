@@ -252,7 +252,7 @@ struct MainTabView: View {
                 }
             }
         }
-        .tint(Color.brandSoftPlum)
+        .tint(Color.brandAccent)
     }
 }
 
@@ -292,7 +292,7 @@ struct DashboardView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(24)
-                .background(.white, in: RoundedRectangle(cornerRadius: 20))
+                .background(Color.brandCardBackground, in: RoundedRectangle(cornerRadius: 20))
                 .shadow(color: Color.brandLavender.opacity(0.2), radius: 12, y: 4)
 
                 // Active Unlocks
@@ -328,7 +328,7 @@ struct DashboardView: View {
                                 }
                             }
                             .padding(12)
-                            .background(.white, in: RoundedRectangle(cornerRadius: 12))
+                            .background(Color.brandCardBackground, in: RoundedRectangle(cornerRadius: 12))
                             .shadow(color: Color.brandLavender.opacity(0.1), radius: 6, y: 2)
                         }
                     }
@@ -346,7 +346,7 @@ struct DashboardView: View {
                             .foregroundStyle(Color.brandLavender)
                     }
                     .padding(16)
-                    .background(.white, in: RoundedRectangle(cornerRadius: 12))
+                    .background(Color.brandCardBackground, in: RoundedRectangle(cornerRadius: 12))
                     .shadow(color: Color.brandLavender.opacity(0.1), radius: 6, y: 2)
                 }
 
@@ -376,7 +376,7 @@ struct DashboardView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(16)
-                .background(.white.opacity(0.7), in: RoundedRectangle(cornerRadius: 12))
+                .background(Color.brandCardBackground.opacity(0.7), in: RoundedRectangle(cornerRadius: 12))
 
                 if !extensionLogs.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
@@ -400,7 +400,7 @@ struct DashboardView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(16)
-                    .background(.white.opacity(0.7), in: RoundedRectangle(cornerRadius: 12))
+                    .background(Color.brandCardBackground.opacity(0.7), in: RoundedRectangle(cornerRadius: 12))
                 }
             }
             .padding(16)

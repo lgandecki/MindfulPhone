@@ -33,7 +33,37 @@ final class ChatViewModel {
 
     func setup(modelContext: ModelContext) {
         self.modelContext = modelContext
+        loadExistingConversation()
         loadPendingRequest()
+    }
+
+    /// Called when a new unlock notification arrives while chat is already showing.
+    func handleNewUnlockRequest() {
+        guard modelContext != nil else { return }
+        loadPendingRequest()
+    }
+
+    // MARK: - Load Existing Conversation
+
+    private func loadExistingConversation() {
+        guard let context = modelContext else { return }
+
+        var descriptor = FetchDescriptor<Conversation>(
+            sortBy: [SortDescriptor(\.startedAt, order: .reverse)]
+        )
+        descriptor.fetchLimit = 1
+
+        guard let existing = try? context.fetch(descriptor).first else { return }
+
+        self.conversation = existing
+        self.messages = existing.sortedMessages.map { msg in
+            DisplayMessage(id: msg.id, role: msg.role, content: msg.content, timestamp: msg.timestamp)
+        }
+
+        // Reflect the last request's state
+        if existing.outcome == "approved" || existing.outcome == "permanent_exempt" {
+            isApproved = true
+        }
     }
 
     // MARK: - Load Pending Request
@@ -45,15 +75,32 @@ final class ChatViewModel {
             return
         }
 
+        // Don't reload the same request we're already handling
+        if let current = pendingRequest, current.id == request.id {
+            return
+        }
+
         self.pendingRequest = request
         self.appName = request.appName
 
-        // Create a new conversation in SwiftData
-        let convo = Conversation(appName: request.appName)
-        modelContext?.insert(convo)
-        self.conversation = convo
+        // Reset approval state for new request
+        self.isApproved = false
+        self.approvedMinutes = nil
+        self.errorMessage = nil
 
-        // Add initial greeting from assistant
+        if conversation == nil {
+            // No existing conversation — create one
+            let convo = Conversation(appName: request.appName)
+            modelContext?.insert(convo)
+            self.conversation = convo
+        } else {
+            // Reuse existing conversation — update for new request
+            conversation?.appName = request.appName
+            conversation?.outcome = "pending"
+            conversation?.approvedDurationMinutes = nil
+        }
+
+        // Add greeting for this request
         let greeting: String
         if request.appName == "this app" {
             greeting = "What app are you trying to open, and why do you need it right now?"

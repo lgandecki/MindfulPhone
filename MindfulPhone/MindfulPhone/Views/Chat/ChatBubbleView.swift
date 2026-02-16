@@ -17,12 +17,12 @@ struct ChatBubbleView: View {
                         .fill(message.isUser
                               ? AnyShapeStyle(
                                   LinearGradient(
-                                      colors: [Color.brandSoftPlum, Color.brandDeepPlum],
+                                      colors: [Color.brandAccent, Color.brandAccentDeep],
                                       startPoint: .topLeading,
                                       endPoint: .bottomTrailing
                                   )
                               )
-                              : AnyShapeStyle(Color.brandLavender.opacity(0.18)))
+                              : AnyShapeStyle(Color.brandLavender.opacity(0.25)))
                 }
                 .foregroundStyle(message.isUser ? .white : Color.brandDeepPlum)
 

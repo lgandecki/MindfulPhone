@@ -65,6 +65,12 @@ struct ChatView: View {
         .onAppear {
             viewModel.setup(modelContext: modelContext)
         }
+        .onReceive(NotificationCenter.default.publisher(for: .unlockRequestNotificationTapped)) { _ in
+            viewModel.handleNewUnlockRequest()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            viewModel.handleNewUnlockRequest()
+        }
     }
 
     // MARK: - Subviews

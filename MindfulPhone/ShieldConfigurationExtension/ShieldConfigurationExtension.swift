@@ -4,11 +4,34 @@ import UIKit
 
 class ShieldConfigurationExtension: ShieldConfigurationDataSource {
 
-    // Brand colors (matching Theme.swift)
-    private let brandDeepPlum = UIColor(red: 0.16, green: 0.11, blue: 0.24, alpha: 1)
-    private let brandSoftPlum = UIColor(red: 0.29, green: 0.20, blue: 0.38, alpha: 1)
-    private let brandWarmCream = UIColor(red: 0.99, green: 0.96, blue: 0.94, alpha: 1)
-    private let brandLavender = UIColor(red: 0.72, green: 0.66, blue: 0.79, alpha: 1)
+    // Brand colors — adaptive for light/dark mode (matching Theme.swift)
+    private let brandDeepPlum = UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(red: 0.93, green: 0.90, blue: 0.96, alpha: 1) // light text on dark
+            : UIColor(red: 0.16, green: 0.11, blue: 0.24, alpha: 1) // #2A1B3D
+    }
+    private let brandSoftPlum = UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(red: 0.70, green: 0.62, blue: 0.82, alpha: 1) // #B39ED1
+            : UIColor(red: 0.29, green: 0.20, blue: 0.38, alpha: 1) // #4A3460
+    }
+    private let brandWarmCream = UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(red: 0.08, green: 0.06, blue: 0.12, alpha: 1) // #140F1E
+            : UIColor(red: 0.99, green: 0.96, blue: 0.94, alpha: 1) // #FDF6F0
+    }
+    private let brandLavender = UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(red: 0.42, green: 0.36, blue: 0.52, alpha: 1) // #6B5C85
+            : UIColor(red: 0.72, green: 0.66, blue: 0.79, alpha: 1) // #B8A9C9
+    }
+
+    // Non-swapping accent for button backgrounds — stays plum in both modes
+    private let brandAccentDeep = UIColor { tc in
+        tc.userInterfaceStyle == .dark
+            ? UIColor(red: 0.25, green: 0.17, blue: 0.38, alpha: 1) // #402B60
+            : UIColor(red: 0.16, green: 0.11, blue: 0.24, alpha: 1) // #2A1B3D
+    }
 
     override func configuration(shielding application: Application) -> ShieldConfiguration {
         let appName = application.localizedDisplayName ?? "this app"
@@ -46,7 +69,7 @@ class ShieldConfigurationExtension: ShieldConfigurationDataSource {
                 text: "Request Access",
                 color: .white
             ),
-            primaryButtonBackgroundColor: brandDeepPlum,
+            primaryButtonBackgroundColor: brandAccentDeep,
             secondaryButtonLabel: showAlwaysAllow
                 ? ShieldConfiguration.Label(text: "Always Allow", color: brandLavender)
                 : nil
